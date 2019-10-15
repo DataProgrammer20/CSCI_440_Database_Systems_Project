@@ -1,4 +1,4 @@
-create table CARD (
+create table _CARD_(
 	id uniqueidentifier not null primary key,
 	card_num nchar(16) not null,
 	cvv nchar(3) not null,
@@ -7,10 +7,10 @@ create table CARD (
 	card_holder nvarchar(100) not null
 )
 
-create table [ADDRESS](
+create table _ADDRESS_(
 	id uniqueidentifier not null primary key,
 	city nvarchar(100) not null,
-	[state] nvarchar(100) not null,
+	_state_ nvarchar(100) not null,
 	country nvarchar(100) not null,
 	addressLine1 nvarchar(100) not null,
 	addressLine2 nvarchar(100) null
@@ -24,7 +24,7 @@ create table SHIPPINGCOMPANY (
 create table DISTRIBUTER (
 	id uniqueidentifier not null primary key,
 	[name] nvarchar(100) not null,
-	addressId uniqueidentifier not null references [ADDRESS](id),
+	addressId uniqueidentifier not null references _ADDRESS_(id),
 )
 
 create table PRODUCT (
@@ -45,21 +45,46 @@ create table CUSTOMER (
 	username nvarchar(100),
 	passwordSalt nvarchar(100),
 	encryptedPassword nvarchar(100), --hash(hash(id|{password})|passwordSalt) --to check select (id,passwordSalt,encryptedPassword) from CUSTOMER where username = @username
-	shipping_address uniqueidentifier references [ADDRESS](id),
-	billing_address uniqueidentifier references [ADDRESS](id),
+	shipping_address uniqueidentifier references _ADDRESS_(id),
+	billing_address uniqueidentifier references _ADDRESS_(id),
 	constraint idx_CUSTOMER_username unique clustered (username)
 ) 
 
---TODO: ORDER, PENDINGORDER, Relationships
-
-create table SHOPPINGCART (
-	
+create table ORDERLINE (	--A single line of an order
+	id uniqueidentifier not null primary key,
+	productQuanitity int not null,
+	productId uniqueidentifier not null references PRODUCT(id),
+	lineCost float not null
 )
 
-create table WORKSWITH
+create table _ORDER_ (		--A purchased order includs a tracking # and arrival date whereas a pending order would not contain those things
+	orderID uniqueidentifier not null primary key,
+	orderLineId uniqueidentifier not null references ORDERLINE(id),
+	customerID uniqueidentifier not null references CUSTOMER(id),
+	trackingNumber int not null,
+	arrivalDate date not null
+)
 
-create table HASCARD (
+create table PENDINGORDER (	--an order in a shopping cart
+	orderId uniqueIdentifier not null primary key,
+	orderLineId uniqueidentifier not null references ORDERLINE(id),
+	orderCost float not null
+)
+
+create table SHOPPINGCART ( -- contains a customer and a nullable pending order (is null if there is no order)
+	customerID uniqueidentifier not null references CUSTOMER(id),
+	pendingOrder uniqueidentifier null references PENDINGORDER(orderId)
+)
+
+create table WORKSWITH (
+	distributerID uniqueIdentifier not null references DISTRIBUTER(id),
+	shippingCoID uniqueIdentifier not null references SHIPPINGCOMPANY(id)
+)
+
+create table HASCARD(
 	customerId uniqueidentifier not null references CUSTOMER(id), 
-	cardId uniqueidentifier not null references CARD(id),
+	cardId uniqueidentifier not null references _CARD_(id),
 	constraint pk_HASCARD primary key clustered (customerId, cardId)
 )
+
+--TODO: CHECKOVER
