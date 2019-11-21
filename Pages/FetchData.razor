@@ -1,0 +1,58 @@
+﻿@page "/fetchdata"
+
+@using Project_v2.Data
+@inject WeatherForecastService ForecastService
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Cost</th>
+                <th>Inventory Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (WeatherForecastService.Product c in products)
+            {
+            <tr>
+                <td @onclick=@(e => SelectName(c.name))>@c.name</td>
+                <td @onclick=@(e => SelectName(c.cost.ToString()))>@c.cost.ToString("c")</td>
+                <td @onclick=@(e => SelectName(c.inventoryCount.ToString()))>@c.inventoryCount</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+@if (selectedName != null)
+{
+    <p>@selectedName was selected!</p>
+}
+
+@code {
+    System.Collections.Generic.List<WeatherForecastService.Product>
+    products;
+
+    String selectedName = null;
+
+    void SelectName(String name)
+    {
+        Console.WriteLine($"{name} was selected");
+        selectedName = name;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ForecastService.GetOrdersFor(Guid.Empty);
+        
+    }
+}
