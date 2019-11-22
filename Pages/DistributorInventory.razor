@@ -1,0 +1,36 @@
+﻿@using Project_v2.Data
+@using System.Collections.Generic
+@inject StoreService  storeService
+
+<h3>DistributorInventory</h3>
+@if (currentProducts == null) {
+    <div>Loading...</div>
+} else {
+    <table width="100%">
+        <tr>
+            <th width="40%">Name</th>
+            <th width="20%">Cost</th>
+            <th width="20%">Inventory Count</th>
+            <th width="20%">Minimum Age to Buy</th>
+        </tr>
+        @foreach (StoreService.Product p in currentProducts) {
+            <tr>
+                <td>@p.name</td>
+                <td>@p.cost.ToString("c")</td>
+                <td>@p.inventoryCount</td>
+                <td>@p.minAgeRestriction</td>
+            </tr>
+        }
+    </table>
+}
+
+@code {
+    [Parameter]
+    public StoreService.Distributor distributor { get; set; }
+    List<StoreService.Product> currentProducts = null;
+    protected override async Task OnInitializedAsync() {
+        currentProducts = await storeService.GetDistributorsProducts(distributor.id);
+
+    }
+
+}

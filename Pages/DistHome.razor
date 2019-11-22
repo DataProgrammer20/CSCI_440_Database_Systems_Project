@@ -28,10 +28,12 @@
 else
 {
 <div class="row">
-    <div class="col-6">Distributor Selected: @selectedDistributor.name</div>
-    <div class="col-2"><button @onclick=@(e=>SelectScreen(1))>Add Product</button></div>
-    <div class="col-2"><button @onclick=@(e=>SelectScreen(2))>Inventory</button></div>
-    <div class="col-2"><button @onclick=@(e=>SelectScreen(3))>Sales</button></div>
+    <div class="col-4">Distributor Selected: @selectedDistributor.name</div>
+
+    <div class="col-2"><button @onclick=@(e =>SelectScreen(0))>Select Distributor</button></div>
+    <div class="col-2"><button @onclick=@(e =>SelectScreen(1))>Add Product</button></div>
+    <div class="col-2"><button @onclick=@(e =>SelectScreen(2))>Inventory</button></div>
+    <div class="col-2"><button @onclick=@(e =>SelectScreen(3))>Sales</button></div>
 </div>
 switch (selectedScreen){
 
@@ -41,10 +43,11 @@ break;
     }
     case 1: {
 <span>ADD PRODUCT!</span>
+
 break;
 }
     case 2: {
-<span>VIEW INVENTORY!</span>
+<DistributorInventory distributor=@selectedDistributor />
     break;
     }
     case 3: {
@@ -55,26 +58,29 @@ break;
 }
 
 }
-@code
-{
+@code {
     public StoreService.Distributor selectedDistributor = null;
-    List<StoreService.Distributor> distributors = null;
+    List<StoreService.Distributor>
+    distributors = null;
 
     int selectedScreen = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        distributors = await storeService.GetDistributors();
-
+    distributors = await storeService.GetDistributors();
     }
 
     void SelectScreen(int screenNumber) {
+        if (screenNumber == 0){
+        selectedDistributor = null;
+        }
+
         selectedScreen = screenNumber;
     }
 
     void SelectDistributor(StoreService.Distributor d)
     {
-        selectedDistributor = d;
+    selectedDistributor = d;
     }
 
-}
+    }

@@ -139,5 +139,36 @@ namespace Project_v2.Data
 
             return results;
         }
+
+        public async Task<List<Product>> GetDistributorsProducts(Guid distID) {
+            List<Product> results = new List<Product>();
+            var conn = new SqlConnection("Server=tcp:msu440.database.windows.net,1433;Initial Catalog=msu440;Persist Security Info=False;User ID=allen@psimpsonmotionencoding.onmicrosoft.com;Password=MSUDatabases440!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication=\"Active Directory Password\";");
+            await conn.OpenAsync();
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText =
+                @"
+                SELECT id,name,cost,inventory,minAgeRestrictionInYears
+                FROM STORE.PRODUCT
+                WHERE distributerId = @distID
+                ORDER BY name;
+                ";
+            cmd.Parameters.AddWithValue("distID", distID);
+            var rdr = await cmd.ExecuteReaderAsync();
+
+            while (await rdr.ReadAsync()) {
+                results.Add(
+                    new Product {
+                        id = rdr.GetGuid(0),
+                        name = rdr.GetString(1),
+                        cost = rdr.GetDouble(2),
+                        inventoryCount = rdr.GetInt32(3),
+                        minAgeRestriction = rdr.GetInt32(4)
+                    }
+                 );
+            }
+
+            return results;
+        }
     }
 }
