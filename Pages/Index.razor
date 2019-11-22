@@ -1,31 +1,15 @@
 ﻿@page "/"
 
 @using Project_v2.Data
-@inject WeatherForecastService ForecastService
+@inject StoreService storeService
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<p>Home Page!</p>
 
 
-@if (toggleCounter)
-{
-    <Counter @bind-value="counterValue"></Counter>
-}
-else
-{
-    <p>You should click that button...</p>
-}
-<img />
-<button @onclick="Clicked">Click Me Too!</button>
-<p>counterValue: @counterValue</p>
+
+
+
+
 @code {
-    int counterValue = 1;
-
-    bool toggleCounter = false;
-    void Clicked ()
-    {
-        toggleCounter = !toggleCounter;
-    }
 }
 

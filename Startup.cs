@@ -28,7 +28,7 @@ namespace Project_v2
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddScoped<WeatherForecastService>();
+            services.AddScoped<StoreService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

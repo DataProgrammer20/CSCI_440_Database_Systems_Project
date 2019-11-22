@@ -1,9 +1,9 @@
 ﻿@page "/fetchdata"
 
 @using Project_v2.Data
-@inject WeatherForecastService ForecastService
+@inject StoreService storeService
 
-<h1>Weather forecast</h1>
+<h1>Store</h1>
 
 <p>This component demonstrates fetching data from a service.</p>
 
@@ -22,7 +22,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (WeatherForecastService.Product c in products)
+            @foreach (StoreService.Product c in products)
             {
             <tr>
                 <td @onclick=@(e => SelectName(c.name))>@c.name</td>
@@ -39,7 +39,7 @@ else
 }
 
 @code {
-    System.Collections.Generic.List<WeatherForecastService.Product>
+    System.Collections.Generic.List<StoreService.Product>
     products;
 
     String selectedName = null;
@@ -52,7 +52,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        products = await ForecastService.GetOrdersFor(Guid.Empty);
+        products = await storeService.GetOrdersFor(Guid.Empty);
         
     }
 }
