@@ -2,7 +2,7 @@
 @using System.Collections.Generic
 @inject StoreService  storeService
 
-<h3>DistributorInventory</h3>
+<h3>Distributor Inventory</h3>
 @if (currentProducts == null) {
     <div>Loading...</div>
 } else {
@@ -19,6 +19,7 @@
                 <td>@p.cost.ToString("c")</td>
                 <td>@p.inventoryCount</td>
                 <td>@p.minAgeRestriction</td>
+                <td><button @onclick=@(e=>DeleteProduct(p)) >Delete Product</button></td>
             </tr>
         }
     </table>
@@ -27,10 +28,20 @@
 @code {
     [Parameter]
     public StoreService.Distributor distributor { get; set; }
-    List<StoreService.Product> currentProducts = null;
+
+    [Parameter]
+    public List<StoreService.Product> currentProducts {get;set;}
+
+    [Parameter]
+    public EventCallback onChanged { get; set; }
+
     protected override async Task OnInitializedAsync() {
-        currentProducts = await storeService.GetDistributorsProducts(distributor.id);
+        //currentProducts = await storeService.GetDistributorsProducts(distributor.id);
 
     }
 
+    async Task DeleteProduct(StoreService.Product p) {
+        storeService.DeleteProduct(p);
+        await onChanged.InvokeAsync(null);
+    }
 }

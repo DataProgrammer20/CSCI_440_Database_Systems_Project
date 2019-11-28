@@ -8,6 +8,7 @@ namespace Project_v2.Data
 {
     public class StoreService
     {
+        private string connStr = "Server=tcp:msu440.database.windows.net,1433;Initial Catalog=msu440;Persist Security Info=False;User ID=allen@psimpsonmotionencoding.onmicrosoft.com;Password=MSUDatabases440!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication=\"Active Directory Password\";";
         public class Address
         {
             public Guid id { get; set; }
@@ -26,6 +27,7 @@ namespace Project_v2.Data
             public double cost { get; set; }
             public int inventoryCount { get; set; }
             public int minAgeRestriction { get; set; }
+            public Guid distributorID { get; set; }
         }
 
         public class Card
@@ -37,7 +39,7 @@ namespace Project_v2.Data
             public string cardType { get; set; }
             public string cardHolder { get; set; }
         }
-        
+
         public class Customer
         {
             public Guid id { get; set; }
@@ -66,7 +68,7 @@ namespace Project_v2.Data
             public int trackingNumber { get; set; }
             public DateTime date { get; set; }
         }
-        
+
         public class OrderLine
         {
             public Guid id { get; set; }
@@ -77,42 +79,39 @@ namespace Project_v2.Data
 
         }
 
-        public async Task<List<Product>> GetOrdersFor(Guid customerId)
-        {
+        public async Task<List<Product>> GetOrdersFor(Guid customerId) {
             List<Product> results = new List<Product>();
-            var conn = new SqlConnection("Server=tcp:msu440.database.windows.net,1433;Initial Catalog=msu440;Persist Security Info=False;User ID=allen@psimpsonmotionencoding.onmicrosoft.com;Password=MSUDatabases440!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication=\"Active Directory Password\";");
-            
+            var conn = new SqlConnection(connStr);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
-            
+
             cmd.CommandText =
                 @"
-                SELECT id,name,cost,inventory,minAgeRestrictionInYears
+                SELECT id,name,cost,inventory,minAgeRestrictionInYears,distributerId
                 FROM STORE.PRODUCT;
                 ";
 
             var rdr = await cmd.ExecuteReaderAsync();
-                
-            while (await rdr.ReadAsync())
-            {
+
+            while (await rdr.ReadAsync()) {
                 results.Add(
                     new Product {
                         id = rdr.GetGuid(0),
-                        name = rdr.GetString(1), 
-                        cost = rdr.GetDouble(2), 
-                        inventoryCount = rdr.GetInt32(3), 
-                        minAgeRestriction = rdr.GetInt32(4)
+                        name = rdr.GetString(1),
+                        cost = rdr.GetDouble(2),
+                        inventoryCount = rdr.GetInt32(3),
+                        minAgeRestriction = rdr.GetInt32(4),
+                        distributorID = rdr.GetGuid(5)
                     }
                  );
-            }            
-            
+            }
+
             return results;
         }
 
-        public async Task<List<Distributor>> GetDistributors()
-        {
+        public async Task<List<Distributor>> GetDistributors() {
             List<Distributor> results = new List<Distributor>();
-            var conn = new SqlConnection("Server=tcp:msu440.database.windows.net,1433;Initial Catalog=msu440;Persist Security Info=False;User ID=allen@psimpsonmotionencoding.onmicrosoft.com;Password=MSUDatabases440!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication=\"Active Directory Password\";");
+            var conn = new SqlConnection(connStr);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
@@ -125,11 +124,9 @@ namespace Project_v2.Data
 
             var rdr = await cmd.ExecuteReaderAsync();
 
-            while (await rdr.ReadAsync())
-            {
+            while (await rdr.ReadAsync()) {
                 results.Add(
-                    new Distributor
-                    {
+                    new Distributor {
                         id = rdr.GetGuid(0),
                         name = rdr.GetString(1),
                         addressID = rdr.GetGuid(2)
@@ -142,13 +139,14 @@ namespace Project_v2.Data
 
         public async Task<List<Product>> GetDistributorsProducts(Guid distID) {
             List<Product> results = new List<Product>();
-            var conn = new SqlConnection("Server=tcp:msu440.database.windows.net,1433;Initial Catalog=msu440;Persist Security Info=False;User ID=allen@psimpsonmotionencoding.onmicrosoft.com;Password=MSUDatabases440!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication=\"Active Directory Password\";");
+
+            var conn = new SqlConnection(connStr);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
             cmd.CommandText =
                 @"
-                SELECT id,name,cost,inventory,minAgeRestrictionInYears
+                SELECT id,name,cost,inventory,minAgeRestrictionInYears,distributerId
                 FROM STORE.PRODUCT
                 WHERE distributerId = @distID
                 ORDER BY name;
@@ -163,12 +161,81 @@ namespace Project_v2.Data
                         name = rdr.GetString(1),
                         cost = rdr.GetDouble(2),
                         inventoryCount = rdr.GetInt32(3),
-                        minAgeRestriction = rdr.GetInt32(4)
+                        minAgeRestriction = rdr.GetInt32(4),
+                        distributorID = rdr.GetGuid(5)
                     }
                  );
             }
 
             return results;
+        }
+
+        public async void SaveNewProduct(Product prod) {
+            List<Product> results = new List<Product>();
+            var conn = new SqlConnection(connStr);
+            await conn.OpenAsync();
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText =
+                @"
+                INSERT INTO STORE.PRODUCT VALUES 
+                (@id,@name,@cost,@inv,@minAge,@distId);
+                ";
+            cmd.Parameters.AddWithValue("id", prod.id);
+            cmd.Parameters.AddWithValue("name", prod.name);
+            cmd.Parameters.AddWithValue("cost", prod.cost);
+            cmd.Parameters.AddWithValue("inv", prod.inventoryCount);
+            cmd.Parameters.AddWithValue("minAge", prod.minAgeRestriction);
+            cmd.Parameters.AddWithValue("distId", prod.distributorID);
+
+            cmd.ExecuteNonQuery();
+        }
+        public async Task<List<Tuple<Product,int>>> getSalesByDistributer(Guid distID) {
+            List<Tuple<Product,int>> results = new List<Tuple<Product,int>>();
+
+            var conn = new SqlConnection(connStr);
+            await conn.OpenAsync();
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText =
+                @"
+                SELECT p.id,p.name,p.cost,p.inventory,p.minAgeRestrictionInYears,p.distributerId,SUM(ol.productQuanitity) as cnt 
+                FROM STORE.ORDERLINE ol 
+	                INNER JOIN STORE.PRODUCT p ON ol.productId = p.id 
+                WHERE p.distributerId = @distID
+                GROUP BY p.id,p.name,p.cost,p.inventory,p.minAgeRestrictionInYears,p.distributerId;
+                ";
+            cmd.Parameters.AddWithValue("distID", distID);
+            var rdr = await cmd.ExecuteReaderAsync();
+
+            while (await rdr.ReadAsync()) {
+                var p = new Product {
+                        id = rdr.GetGuid(0),
+                        name = rdr.GetString(1),
+                        cost = rdr.GetDouble(2),
+                        inventoryCount = rdr.GetInt32(3),
+                        minAgeRestriction = rdr.GetInt32(4),
+                        distributorID = rdr.GetGuid(5)
+                };
+                results.Add(new Tuple<Product, int>(p,rdr.GetInt32(6)));
+            }
+
+            return results;
+        }
+
+        public async void DeleteProduct(Product p) {
+            var conn = new SqlConnection(connStr);
+            await conn.OpenAsync();
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText =
+                @"
+                DELETE FROM STORE.PRODUCT 
+                WHERE id = @productID
+                ";
+            cmd.Parameters.AddWithValue("productID", p.id);
+            
+            cmd.ExecuteNonQuery();
         }
     }
 }

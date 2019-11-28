@@ -35,52 +35,55 @@ else
     <div class="col-2"><button @onclick=@(e =>SelectScreen(2))>Inventory</button></div>
     <div class="col-2"><button @onclick=@(e =>SelectScreen(3))>Sales</button></div>
 </div>
-switch (selectedScreen){
+    switch (selectedScreen){
 
-    case 0: {
+        case 0: {
 
-break;
+        break;
+        }case 1: {
+
+    <DistributorAdd distributor=@selectedDistributor currentProducts=@currentProducts onChanged=@Refresh />
+        break;
+        }case 2: {
+    <DistributorInventory distributor=@selectedDistributor currentProducts=@currentProducts onChanged=@Refresh />
+        break;
+        }case 3: {
+    <DistributorSales distributor=@selectedDistributor/>
+        break;
+        }
+
     }
-    case 1: {
-<span>ADD PRODUCT!</span>
-
-break;
-}
-    case 2: {
-<DistributorInventory distributor=@selectedDistributor />
-    break;
-    }
-    case 3: {
-<span>VIEW SALES!</span>
-    break;
-    }
-
-}
 
 }
 @code {
     public StoreService.Distributor selectedDistributor = null;
-    List<StoreService.Distributor>
-    distributors = null;
+    List<StoreService.Distributor> distributors = null;
+    List<StoreService.Product> currentProducts = null;
 
     int selectedScreen = 0;
 
     protected override async Task OnInitializedAsync()
     {
-    distributors = await storeService.GetDistributors();
+        distributors = await storeService.GetDistributors();
+
     }
 
     void SelectScreen(int screenNumber) {
         if (screenNumber == 0){
-        selectedDistributor = null;
+            selectedDistributor = null;
         }
 
         selectedScreen = screenNumber;
     }
 
-    void SelectDistributor(StoreService.Distributor d)
+    async Task SelectDistributor(StoreService.Distributor d)
     {
-    selectedDistributor = d;
+        selectedDistributor = d;
+        currentProducts = await storeService.GetDistributorsProducts(selectedDistributor.id);
     }
 
+    async Task Refresh() {
+        await SelectDistributor(selectedDistributor);
+        StateHasChanged();
     }
+}

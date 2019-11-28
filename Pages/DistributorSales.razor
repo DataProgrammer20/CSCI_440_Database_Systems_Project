@@ -1,0 +1,42 @@
+﻿@using Project_v2.Data
+@using System.Collections.Generic
+@inject StoreService  storeService
+
+<h3>Distributor Sales</h3>
+@if (currentProductsAndQuanities == null) {
+    <div>Loading...</div>
+} else {
+    <table width="100%">
+        <tr>
+            <th width="40%">Name</th>
+            <th width="20%">Cost</th>
+            <th width="20%">Inventory Count</th>
+            <th width="20%">Sales Qty</th>
+            <th width="20%">Sales Total</th>
+        </tr>
+        @foreach (Tuple<StoreService.Product, int> t in currentProductsAndQuanities) {
+            var total = t.Item2 * Convert.ToDouble(t.Item1.inventoryCount);
+            <tr>
+                <td>@t.Item1.name</td>
+                <td>@t.Item1.cost.ToString("c")</td>
+                <td>@t.Item1.inventoryCount</td>
+                <td>@t.Item2</td>
+                <td>@total.ToString("c")</td>
+
+            </tr>
+        }
+    </table>
+}
+
+@code {
+    [Parameter]
+    public StoreService.Distributor distributor { get; set; }
+
+    public List<Tuple<StoreService.Product, int>> currentProductsAndQuanities { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        currentProductsAndQuanities = await storeService.getSalesByDistributer(distributor.id);
+
+    }
+
+}
