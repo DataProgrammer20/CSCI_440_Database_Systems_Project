@@ -237,5 +237,82 @@ namespace Project_v2.Data
             
             cmd.ExecuteNonQuery();
         }
+
+        public async void getCart (Customer c) {
+            List<Tuple<Product, int>> results = new List<Tuple<Product, int>>();
+
+            var conn = new SqlConnection(connStr);
+            await conn.OpenAsync();
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText =
+                @"
+                SELECT p.id,p.name,p.cost,p.inventory,p.minAgeRestrictionInYears,p.distributerId,ol.productQuanitity
+                FROM STORE.PRODUCT p INNER JOIN STORE.ORDERLINE ol ON p.id = ol.productId INNER JOIN cartOrders o ON o.orderID = ol.orderID
+                WHERE o.customerID = @custID 	
+                ";
+            cmd.Parameters.AddWithValue("custID", c.id);
+            var rdr = await cmd.ExecuteReaderAsync();
+
+            while (await rdr.ReadAsync()) {
+                var p = new Product {
+                    id = rdr.GetGuid(0),
+                    name = rdr.GetString(1),
+                    cost = rdr.GetDouble(2),
+                    inventoryCount = rdr.GetInt32(3),
+                    minAgeRestriction = rdr.GetInt32(4),
+                    distributorID = rdr.GetGuid(5)
+                };
+                results.Add(new Tuple<Product, int>(p, rdr.GetInt32(6)));
+            }
+
+        }
+
+        public async void addToCart(Customer c, Product p) {
+            var conn = new SqlConnection(connStr);
+            await conn.OpenAsync();
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText =
+                @"
+                DECLARE @customerCart uniqueidentifier;
+
+                SELECT TOP 1 @customerCart = o.orderID 
+                FROM cartOrders o 
+                WHERE o.customerID = @custID
+                BEGIN TRANSACTION;
+                    BEGIN TRY
+                        IF NOT Exists(
+                            SELECT ol.id
+                            FROM cartOrders o, STORE.ORDERLINE ol
+                            WHERE o.orderID = ol.orderID AND ol.productId = @prodID AND o.customerID = @custID
+                            )
+                            BEGIN
+                                INSERT INTO STORE.ORDERLINE VALUES(NEWID(), @customerCart,1,@prodID,(SELECT cost FROM STORE.PRODUCT WHERE id = @prodID));
+                            END
+                        ELSE
+                            BEGIN
+                                UPDATE STORE.ORDERLINE
+                                SET productQuanitity = productQuanitity + 1, 
+					                lineCost = productQuanitity * (SELECT cost FROM STORE.PRODUCT WHERE id = @prodID)
+				                WHERE
+                                    orderID = @customerCart AND productId = @prodID;
+                            END
+                        UPDATE STORE.PRODUCT
+                        SET inventory = inventory - 1
+                        WHERE
+                            id = @prodID;
+                        COMMIT TRANSACTION;
+                    END TRY
+                    BEGIN CATCH
+                        ROLLBACK TRANSACTION;
+                    END CATCH
+                ";
+            cmd.Parameters.AddWithValue("custID", c.id);
+            cmd.Parameters.AddWithValue("prodID", p.id);
+
+            cmd.ExecuteNonQuery();
+        }
+
     }
 }

@@ -1,7 +1,81 @@
 ﻿@page "/CustHome"
+@using Project_v2.Data
+@using System.Collections.Generic
+@inject StoreService  storeService
 
 <p>CustHome</p>
 
-@code {
+@if (selectedCustomer == null) {
+    <div>
+        <label>Select Distributor: </label>
 
+        @if (distributors != null) {
+            <select>
+                @foreach (StoreService.Distributor d in distributors) {
+                    <option @onclick=@(e => SelectDistributor(d)) value=@d.id>@d.name</option>
+                }
+            </select>
+        } else {
+            <span>Loading...</span>
+        }
+    </div>
+} else {
+    <div class="row">
+        <div class="col-4">Distributor Selected: @selectedCustomer.name</div>
+
+        <div class="col-2"><button @onclick=@(e =>SelectScreen(0))>Select Distributor</button></div>
+        <div class="col-2"><button @onclick=@(e =>SelectScreen(1))>Add Product</button></div>
+        <div class="col-2"><button @onclick=@(e =>SelectScreen(2))>Inventory</button></div>
+        <div class="col-2"><button @onclick=@(e =>SelectScreen(3))>Sales</button></div>
+    </div>
+    switch (selectedScreen) {
+
+        case 0: {
+                break;
+            }
+        case 1: {
+        <DistributorAdd distributor=@selectedCustomer currentProducts=@currentProducts onChanged=@Refresh />
+        break;
+    }
+case 2: {
+<DistributorInventory distributor=@selectedCustomer currentProducts=@currentProducts onChanged=@Refresh />
+break;
+}
+case 3: {
+<DistributorSales distributor=@selectedCustomer />
+break;
+}
+
+}
+
+}
+@code {
+    public StoreService.Customer selectedCustomer = null;
+    List<StoreService.Distributor> distributors = null;
+    List<StoreService.Product> currentProducts = null;
+
+    int selectedScreen = 0;
+
+    protected override async Task OnInitializedAsync() {
+        distributors = await storeService.GetDistributors();
+
+    }
+
+    void SelectScreen(int screenNumber) {
+        if (screenNumber == 0) {
+            selectedDistributor = null;
+        }
+
+        selectedScreen = screenNumber;
+    }
+
+    async Task SelectDistributor(StoreService.Distributor d) {
+        selectedDistributor = d;
+        currentProducts = await storeService.GetDistributorsProducts(selectedDistributor.id);
+    }
+
+    async Task Refresh() {
+        await SelectDistributor(selectedDistributor);
+        StateHasChanged();
+    }
 }
