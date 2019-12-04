@@ -238,7 +238,7 @@ namespace Project_v2.Data
             cmd.ExecuteNonQuery();
         }
 
-        public async void getCart (Customer c) {
+        public async Task<List<Tuple<Product, int>>> GetCart (Customer c) {
             List<Tuple<Product, int>> results = new List<Tuple<Product, int>>();
 
             var conn = new SqlConnection(connStr);
@@ -265,7 +265,7 @@ namespace Project_v2.Data
                 };
                 results.Add(new Tuple<Product, int>(p, rdr.GetInt32(6)));
             }
-
+            return results;
         }
 
         public async void addToCart(Customer c, Product p) {
@@ -314,5 +314,19 @@ namespace Project_v2.Data
             cmd.ExecuteNonQuery();
         }
 
+        public async void RemoveProductFromCart(Product p, Guid custID)
+        {
+            var conn = new SqlConnection(connStr);
+            await conn.OpenAsync();
+            var cmd = conn.CreateCommand();
+
+            cmd.CommandText =
+                @"
+                --SELECT orderline given a productID and custID, then delete it.
+                ";
+            cmd.Parameters.AddWithValue("productID", p.id);
+            cmd.Parameters.AddWithValue("custID", custID);
+
+            cmd.ExecuteNonQuery();
+        }
     }
-}

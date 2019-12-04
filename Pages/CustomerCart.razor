@@ -13,14 +13,21 @@
             <th width="20%">Quanity</th>
             <th width="20%">Remove</th>
         </tr>
-    @foreach (StoreService.Product p in cartLines) {
+        @foreach (Tuple<StoreService.Product,int> p in cartLines) {
         <tr>
-            <td>@p.name</td>
-            <td>@p.cost.ToString("c")</td>
-            <td>@p.inventoryCount</td>
-            <td><button @onclick=@(e=>DeleteProduct(p)) >Delete Product</button></td>
+            <td>@p.Item1.name</td>
+            <td>@p.Item1.cost.ToString("c")</td>
+            <td>@p.Item2</td>
+            <td><button @onclick=@(e=>RemoveProduct(p.Item1,customer.id)) >Delete Product</button></td>
         </tr>
-    }
+        }
+        @foreach (Tuple<StoreService.Product, int> p in cartLines) { totalCost = totalCost + (p.Item1.cost * p.Item2)}
+        <tr>
+            <td>Total:</td>
+            <td></td>
+            <td>@totalCost</td>
+            <td></td>
+        </tr>
     </table>
 }
 @code {
@@ -33,20 +40,17 @@
     [Parameter]
     public EventCallback onChanged { get; set; }
 
+    double totalCost = 0.0;
+
     StoreService.Product newProduct = new StoreService.Product();
 
     //List<StoreService.Product> currentProducts = null;
     protected override async Task OnInitializedAsync() {
-        cartLines = await storeService.getCart(customer);
+        cartLines = await storeService.GetCart(customer);
     }
 
-    async Task SaveNewProduct() {
-        //Save Product here
-        var i = 0;
-        newProduct.id = Guid.NewGuid();
-        newProduct.distributorID = distributor.id;
-        storeService.SaveNewProduct(newProduct);
-        currentProducts = await storeService.GetDistributorsProducts(distributor.id);
+    async Task RemoveProduct(StoreService.Product p, Guid custID) {
+        //storeService.RemoveProductFromCart(p,custID);
         await onChanged.InvokeAsync(null);
     }
 }
