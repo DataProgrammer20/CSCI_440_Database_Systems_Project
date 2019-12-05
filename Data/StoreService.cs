@@ -16,7 +16,6 @@ namespace Project_v2.Data
             public string country { get; set; }
             public string addressLine1 { get; set; }
             public string addressLine2 { get; set; }
-
         }
 
         public class Product
@@ -78,7 +77,8 @@ namespace Project_v2.Data
 
         }
 
-        public async Task<List<Product>> GetOrdersFor(Guid customerId) {
+        public async Task<List<Product>> GetOrdersFor(Guid customerId) 
+        {
             List<Product> results = new List<Product>();
             var conn = new SqlConnection(connStr);
             await conn.OpenAsync();
@@ -108,7 +108,8 @@ namespace Project_v2.Data
             return results;
         }
 
-        public async Task<List<Distributor>> GetDistributors() {
+        public async Task<List<Distributor>> GetDistributors() 
+        {
             List<Distributor> results = new List<Distributor>();
             var conn = new SqlConnection(connStr);
             await conn.OpenAsync();
@@ -132,11 +133,11 @@ namespace Project_v2.Data
                     }
                  );
             }
-
             return results;
         }
 
-        public async Task<List<Product>> GetDistributorsProducts(Guid distID) {
+        public async Task<List<Product>> GetDistributorsProducts(Guid distID) 
+        {
             List<Product> results = new List<Product>();
 
             var conn = new SqlConnection(connStr);
@@ -153,7 +154,8 @@ namespace Project_v2.Data
             cmd.Parameters.AddWithValue("distID", distID);
             var rdr = await cmd.ExecuteReaderAsync();
 
-            while (await rdr.ReadAsync()) {
+            while (await rdr.ReadAsync()) 
+            {
                 results.Add(
                     new Product {
                         id = rdr.GetGuid(0),
@@ -165,11 +167,11 @@ namespace Project_v2.Data
                     }
                  );
             }
-
             return results;
         }
 
-        public async void SaveNewProduct(Product prod) {
+        public async void SaveNewProduct(Product prod) 
+        {
             List<Product> results = new List<Product>();
             var conn = new SqlConnection(connStr);
             await conn.OpenAsync();
@@ -189,7 +191,8 @@ namespace Project_v2.Data
 
             cmd.ExecuteNonQuery();
         }
-        public async Task<List<Tuple<Product,int>>> getSalesByDistributer(Guid distID) {
+        public async Task<List<Tuple<Product,int>>> getSalesByDistributer(Guid distID) 
+        {
             List<Tuple<Product,int>> results = new List<Tuple<Product,int>>();
 
             var conn = new SqlConnection(connStr);
@@ -207,7 +210,8 @@ namespace Project_v2.Data
             cmd.Parameters.AddWithValue("distID", distID);
             var rdr = await cmd.ExecuteReaderAsync();
 
-            while (await rdr.ReadAsync()) {
+            while (await rdr.ReadAsync()) 
+            {
                 var p = new Product {
                         id = rdr.GetGuid(0),
                         name = rdr.GetString(1),
@@ -218,11 +222,11 @@ namespace Project_v2.Data
                 };
                 results.Add(new Tuple<Product, int>(p,rdr.GetInt32(6)));
             }
-
             return results;
         }
 
-        public async void DeleteProduct(Product p) {
+        public async void DeleteProduct(Product p) 
+        {
             var conn = new SqlConnection(connStr);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
@@ -237,7 +241,8 @@ namespace Project_v2.Data
             cmd.ExecuteNonQuery();
         }
 
-        public async void getCart (Customer c) {
+        public async void getCart (Customer c) 
+        {
             List<Tuple<Product, int>> results = new List<Tuple<Product, int>>();
 
             var conn = new SqlConnection(connStr);
@@ -253,7 +258,8 @@ namespace Project_v2.Data
             cmd.Parameters.AddWithValue("custID", c.id);
             var rdr = await cmd.ExecuteReaderAsync();
 
-            while (await rdr.ReadAsync()) {
+            while (await rdr.ReadAsync()) 
+            {
                 var p = new Product {
                     id = rdr.GetGuid(0),
                     name = rdr.GetString(1),
@@ -267,7 +273,8 @@ namespace Project_v2.Data
 
         }
 
-        public async void addToCart(Customer c, Product p) {
+        public async void addToCart(Customer c, Product p) 
+        {
             var conn = new SqlConnection(connStr);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
