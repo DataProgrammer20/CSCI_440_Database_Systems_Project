@@ -1,7 +1,8 @@
-﻿ @using Project_v2.Data *@
- @using System.Collections.Generic
- @inject StoreService  storeService 
-     <div><h3>Cart:</h3></div> 
+﻿ @using Project_v2.Data
+ @inject StoreService  StoreService
+
+<div><h3>Cart:</h3></div>
+
  @if (cartLines == null) { 
      <div></div> 
  } else { 
@@ -17,7 +18,7 @@
              <td>@p.name</td> 
              <td>@p.cost.ToString("c")</td> 
              <td>@p.inventoryCount</td> 
-            <td><button @onclick=@(e=>DeleteProduct(p)) >Delete Product</button></td> 
+            <td><button @onclick=@(e=>DeleteProduct(p))>Delete Product</button></td> 
          </tr> 
      } 
      </table> 
@@ -36,7 +37,7 @@
      
      //List<StoreService.Product> currentProducts = null; *@
      protected override async Task OnInitializedAsync() {
-         cartLines = await storeService.getCart(customer); 
+         cartLines = await StoreService.getCart(customer); 
      }
 
      async Task SaveNewProduct() {
@@ -44,8 +45,8 @@
          var i = 0;
          newProduct.id = Guid.NewGuid();
          newProduct.distributorID = distributor.id;
-         storeService.SaveNewProduct(newProduct);
-         currentProducts = await storeService.GetDistributorsProducts(distributor.id);
+         StoreService.SaveNewProduct(newProduct);
+         currentProducts = await StoreService.GetDistributorsProducts(distributor.id);
          await onChanged.InvokeAsync(null); 
      } 
  } 
