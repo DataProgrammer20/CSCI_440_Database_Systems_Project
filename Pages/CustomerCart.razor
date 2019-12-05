@@ -14,13 +14,13 @@
         </tr>
         @foreach (Tuple<StoreService.Product,int> p in cartLines) {
         <tr>
-            <td>@p.Item1.name</td>
-            <td>@p.Item1.cost.ToString("c")</td>
+            <td>@p.Item1.Name</td>
+            <td>@p.Item1.Cost.ToString("c")</td>
             <td>@p.Item2</td>
-            <td><button @onclick=@(e=>RemoveProduct(p.Item1,customer.id)) >Delete Product</button></td>
+            <td><button @onclick=@(e=>RemoveProduct(p.Item1,customer.Id)) >Delete Product</button></td>
         </tr>
         }
-        @foreach (Tuple<StoreService.Product, int> p in cartLines) { totalCost = totalCost + (p.Item1.cost * p.Item2)}
+        @foreach (Tuple<StoreService.Product, int> p in cartLines) { totalCost = totalCost + (p.Item1.Cost * p.Item2); }
         <tr>
             <td>Total:</td>
             <td></td>
@@ -45,7 +45,7 @@
 
     //List<StoreService.Product> currentProducts = null;
     protected override async Task OnInitializedAsync() {
-        cartLines = await storeService.GetCart(customer);
+        cartLines = await StoreService.GetCart(customer);
     }
 
     async Task RemoveProduct(StoreService.Product p, Guid custID) {

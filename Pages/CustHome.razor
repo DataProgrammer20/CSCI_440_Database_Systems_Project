@@ -4,124 +4,67 @@
 
 <p>CustHome</p>
 <div class="row">
+
+    @if (selectedCustomer == null)
+    {
+    <div>
+        <label>Select Customer: </label>
+        @if (customers != null)
+        {
+            <select>
+                @foreach (var c in customers)
+                {
+                    <option @onclick=@(e => SelectCustomer(c)) value=;@c.Id>@c.Name</option>
+
+                }
+            </select>
+        }
+        else
+        {
+            <span>Loading...</span>
+        }
+    </div>
+    }
+    else
+    {
     <div class="col-6">
-       @*WORK ON DISPLAYING AN INVENTORY OF ALL PRODUCTS!*@
+        @*WORK ON DISPLAYING AN INVENTORY OF ALL PRODUCTS!*@
     </div>
     <div class="col-6">
-        <CustomerCart customer=@customer currentProducts=@currentProducts onChanged="onChanged" />
+        <CustomerCart customer=@selectedCustomer cartLines=@currentCart onChanged="Refresh" />
     </div>
+    }
 </div>
-}
+
 @code {
     public StoreService.Customer selectedCustomer = null;
-    List<StoreService.Distributor> distributors = null;
-    List<StoreService.Product> currentProducts = null;
+    List<StoreService.Customer> customers = null;
+    List<Tuple<StoreService.Product, int>> currentCart = null;
 
     int selectedScreen = 0;
-
-    protected override async Task OnInitializedAsync()
-    {
-        distributors = await storeService.GetDistributors();
-
-    }
+    
+     protected override async Task OnInitializedAsync()
+     {
+         customers = await StoreService.GetCustomers();
+     } 
 
     void SelectScreen(int screenNumber)
     {
         if (screenNumber == 0)
         {
-            selectedDistributor = null;
+            selectedCustomer = null;
         }
 
         selectedScreen = screenNumber;
     }
 
-    async Task SelectDistributor(StoreService.Distributor d)
-    {
-        selectedDistributor = d;
-        currentProducts = await storeService.GetDistributorsProducts(selectedDistributor.id);
-    }
-
-    async Task Refresh()
-    {
-        await SelectDistributor(selectedDistributor);
-        StateHasChanged();
-    }
-}
-<p>Customer Shopping Cart</p>
-
-@code {
-     private StoreService.Customer _selectedCustomer; 
-     private List<StoreService.Customer> _customers; 
-     private List<StoreService.Product> _currentCart;
-     private int _selectedScreen;
-
-     protected override async Task OnInitializedAsync()
-     {
-         _customers = await StoreService.GetCustomers();
-     } 
- 
-     void SelectScreen(int screenNumber) 
-     { 
-        if (screenNumber == 0) { 
-             _selectedCustomer = null; 
-      }
-         _selectedScreen = screenNumber; 
-     }
-     
      async Task SelectCustomer(StoreService.Customer c)
      {
-         _currentCart = await StoreService.GetCustomerProducts(c.Id);
+         currentCart = await StoreService.GetCart(c);
      } 
  
      async Task Refresh() { 
-         await SelectCustomer(_selectedCustomer); 
+         await SelectCustomer(selectedCustomer); 
          StateHasChanged();
      } 
- } 
-
- @if (_selectedCustomer == null) { 
-     <div> 
-         <label>Select Customer: </label> 
-         @if (_customers != null) { 
-             <select> 
-                 @foreach (var c in _customers) { 
-                     <option @onclick=@(e => SelectCustomer(c)) value=;@c.Id>@c.Name</option> 
-                 } 
-             </select> 
-         } else { 
-            <span>Loading...</span> 
-         } 
-     </div> 
- } else { 
-    <div class="row"> 
-         <div class="col-4">Customer Selected: @_selectedCustomer.Name</div> 
-         <div class="col-2"><button @onclick=@(e =>SelectScreen(0))>Select Customer</button></div> 
-         <div class="col-2"><button @onclick=@(e =>SelectScreen(1))>Add Product</button></div> 
-         <div class="col-2"><button @onclick=@(e =>SelectScreen(2))>Shopping Cart</button></div> 
-         @* <div class="col-2"><button @onclick=@(e =>SelectScreen(3))>Sales</button></div>  *@
-     </div>
-     switch (_selectedScreen)
-     {
-         case 0:
-         {
-             break;
-         }
-         case 1:
-         {
-             <AddToCart customer=@_selectedCustomer currentProducts=@_currentCart onChanged=@Refresh()/>
-             break;
-         }
-         case 2:
-         {
-             <CustomerCart customer=@_selectedCustomer currentProducts=@_currentCart onChanged=@Refresh()/>
-             break;
-         }
-//         case 3:
-//         {
-//             < customer=@selectedCustomer/>
-//             break;
-//         }
-         default:
-             break;
-     }
- }
+}

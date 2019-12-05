@@ -76,7 +76,7 @@ namespace Project_v2.Data
             public double LineCost { get; set; }
         }
 
-        public async Task<List<Product>> GetOrdersFor(Guid customerId) 
+        public async Task<List<Product>> GetOrdersFor(Guid customerId)
         {
             List<Product> results = new List<Product>();
             var conn = new SqlConnection(ConnectionString);
@@ -91,9 +91,11 @@ namespace Project_v2.Data
 
             var rdr = await cmd.ExecuteReaderAsync();
 
-            while (await rdr.ReadAsync()) {
+            while (await rdr.ReadAsync())
+            {
                 results.Add(
-                    new Product {
+                    new Product
+                    {
                         Id = rdr.GetGuid(0),
                         Name = rdr.GetString(1),
                         Cost = rdr.GetDouble(2),
@@ -134,7 +136,7 @@ namespace Project_v2.Data
             return result;
         }
 
-        public async Task<List<Distributor>> GetDistributors() 
+        public async Task<List<Distributor>> GetDistributors()
         {
             List<Distributor> results = new List<Distributor>();
             var conn = new SqlConnection(ConnectionString);
@@ -149,10 +151,10 @@ namespace Project_v2.Data
                 ";
 
             var rdr = await cmd.ExecuteReaderAsync();
-            while (await rdr.ReadAsync()) 
+            while (await rdr.ReadAsync())
             {
                 results.Add(
-                    new Distributor 
+                    new Distributor
                     {
                         Id = rdr.GetGuid(0),
                         Name = rdr.GetString(1),
@@ -163,7 +165,7 @@ namespace Project_v2.Data
             return results;
         }
 
-        
+
         // Work in progress...
         // =======================================================================
         public async Task<List<Product>> GetCustomerProducts(Guid customerId)
@@ -180,9 +182,9 @@ namespace Project_v2.Data
             return result;
         }
         // =======================================================================
-        
-        
-        public async Task<List<Product>> GetDistributorsProducts(Guid distId) 
+
+
+        public async Task<List<Product>> GetDistributorsProducts(Guid distId)
         {
             List<Product> results = new List<Product>();
 
@@ -200,10 +202,11 @@ namespace Project_v2.Data
             cmd.Parameters.AddWithValue("distID", distId);
             var rdr = await cmd.ExecuteReaderAsync();
 
-            while (await rdr.ReadAsync()) 
+            while (await rdr.ReadAsync())
             {
                 results.Add(
-                    new Product {
+                    new Product
+                    {
                         Id = rdr.GetGuid(0),
                         Name = rdr.GetString(1),
                         Cost = rdr.GetDouble(2),
@@ -216,7 +219,7 @@ namespace Project_v2.Data
             return results;
         }
 
-        public async void SaveNewProduct(Product prod) 
+        public async void SaveNewProduct(Product prod)
         {
             List<Product> results = new List<Product>();
             var conn = new SqlConnection(ConnectionString);
@@ -237,9 +240,9 @@ namespace Project_v2.Data
 
             cmd.ExecuteNonQuery();
         }
-        public async Task<List<Tuple<Product,int>>> GetSalesByDistributor(Guid distId) 
+        public async Task<List<Tuple<Product, int>>> GetSalesByDistributor(Guid distId)
         {
-            List<Tuple<Product,int>> results = new List<Tuple<Product,int>>();
+            List<Tuple<Product, int>> results = new List<Tuple<Product, int>>();
 
             var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
@@ -256,22 +259,23 @@ namespace Project_v2.Data
             cmd.Parameters.AddWithValue("distID", distId);
             var rdr = await cmd.ExecuteReaderAsync();
 
-            while (await rdr.ReadAsync()) 
+            while (await rdr.ReadAsync())
             {
-                var p = new Product {
-                        Id = rdr.GetGuid(0),
-                        Name = rdr.GetString(1),
-                        Cost = rdr.GetDouble(2),
-                        InventoryCount = rdr.GetInt32(3),
-                        MinAgeRestriction = rdr.GetInt32(4),
-                        DistributorId = rdr.GetGuid(5)
+                var p = new Product
+                {
+                    Id = rdr.GetGuid(0),
+                    Name = rdr.GetString(1),
+                    Cost = rdr.GetDouble(2),
+                    InventoryCount = rdr.GetInt32(3),
+                    MinAgeRestriction = rdr.GetInt32(4),
+                    DistributorId = rdr.GetGuid(5)
                 };
-                results.Add(new Tuple<Product, int>(p,rdr.GetInt32(6)));
+                results.Add(new Tuple<Product, int>(p, rdr.GetInt32(6)));
             }
             return results;
         }
 
-        public async void DeleteProduct(Product p) 
+        public async void DeleteProduct(Product p)
         {
             var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
@@ -283,13 +287,13 @@ namespace Project_v2.Data
                 WHERE id = @productID
                 ";
             cmd.Parameters.AddWithValue("productID", p.Id);
-            
+
             cmd.ExecuteNonQuery();
         }
 
         public async void DeleteProductFromCustomerCart(Product product)
         {
-            var connection  = new SqlConnection(ConnectionString);
+            var connection = new SqlConnection(ConnectionString);
             await connection.OpenAsync();
             var cmd = connection.CreateCommand();
 
@@ -302,7 +306,8 @@ namespace Project_v2.Data
             cmd.ExecuteNonQuery();
         }
 
-        public async Task<List<Tuple<Product, int>>> GetCart (Customer c) {
+        public async Task<List<Tuple<Product, int>>> GetCart(Customer c)
+        {
             List<Tuple<Product, int>> results = new List<Tuple<Product, int>>();
 
             var conn = new SqlConnection(ConnectionString);
@@ -318,9 +323,10 @@ namespace Project_v2.Data
             cmd.Parameters.AddWithValue("custID", c.Id);
             var rdr = await cmd.ExecuteReaderAsync();
 
-            while (await rdr.ReadAsync()) 
+            while (await rdr.ReadAsync())
             {
-                var p = new Product {
+                var p = new Product
+                {
                     Id = rdr.GetGuid(0),
                     Name = rdr.GetString(1),
                     Cost = rdr.GetDouble(2),
@@ -333,7 +339,7 @@ namespace Project_v2.Data
             return results;
         }
 
-        public async void AddToCart(Customer c, Product p) 
+        public async void AddToCart(Customer c, Product p)
         {
             var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
@@ -382,7 +388,7 @@ namespace Project_v2.Data
 
         public async void RemoveProductFromCart(Product p, Guid custID)
         {
-            var conn = new SqlConnection(connStr);
+            var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
@@ -390,9 +396,10 @@ namespace Project_v2.Data
                 @"
                 --SELECT orderline given a productID and custID, then delete it.
                 ";
-            cmd.Parameters.AddWithValue("productID", p.id);
+            cmd.Parameters.AddWithValue("productID", p.Id);
             cmd.Parameters.AddWithValue("custID", custID);
 
             cmd.ExecuteNonQuery();
         }
     }
+}
