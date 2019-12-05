@@ -1,7 +1,6 @@
 ﻿@page "/CustHome"
 @using Project_v2.Data
-@using System.Collections.Generic
-@inject StoreService  storeService
+@inject StoreService  StoreService
 
 <p>CustHome</p>
 
@@ -10,8 +9,8 @@
          <label>Select Distributor: </label> 
          @if (distributors != null) { 
              <select> 
-                 @foreach (StoreService.Distributor d in distributors) { 
-                     <option @onclick=@(e => SelectDistributor(d)) value=@d.id>@d.name</option> 
+                 @foreach (var d in distributors) { 
+                     <option @onclick=@(e => SelectDistributor(d)) value=;@d.id>@d.name</option> 
                  } 
              </select> 
          } else { 
@@ -49,28 +48,30 @@
          }
      }
  } 
- @code { 
-     public StoreService.Customer selectedCustomer = null; 
-     List<StoreService.Distributor> distributors = null; 
-     List<StoreService.Product> currentProducts = null; 
- 
-     int selectedScreen = 0; 
- 
+
+ @code {
+     StoreService.Distributor selectedDistributor;
+     private StoreService.Customer selectedCustomer = null; 
+     List<StoreService.Distributor> distributors; 
+     List<StoreService.Product> currentProducts;
+     int selectedScreen;
+
      protected override async Task OnInitializedAsync()
      {
-         distributors = await storeService.GetDistributors();
+         distributors = await StoreService.GetDistributors();
      } 
  
-     void SelectScreen(int screenNumber) { 
+     void SelectScreen(int screenNumber) 
+     { 
         if (screenNumber == 0) { 
              selectedDistributor = null; 
-      } 
- 
+      }
          selectedScreen = screenNumber; 
      }
-     async Task SelectDistributor(StoreService.Distributor d) { 
-         selectedDistributor = d; 
-         currentProducts = await storeService.GetDistributorsProducts(selectedDistributor.id); 
+     
+     async Task SelectDistributor(StoreService.Distributor d) 
+     {
+         currentProducts = await StoreService.GetDistributorsProducts(d.id); 
      } 
  
      async Task Refresh() { 
