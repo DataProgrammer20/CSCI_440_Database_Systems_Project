@@ -64,18 +64,18 @@
          }
          case 1:
          {
-             <DistributorAdd distributor=@selectedCustomer currentProducts=@currentProducts onChanged=@Refresh/>
+             <CustomerAdd customer=@selectedCustomer currentProducts=@currentProducts onChanged=Refresh/>
              break;
          }
          case 2:
          {
-             <DistributorInventory distributor=@selectedCustomer currentProducts=@currentProducts onChanged=@Refresh/>
+             <CustomerCart customer=@selectedCustomer currentProducts=@currentProducts onChanged=Refresh/>
              break;
          }
-         case 3:
-         {
-             <DistributorSales distributor=@selectedCustomer/>
-             break;
-         }
+//         case 3:
+//         {
+//             < customer=@selectedCustomer/>
+//             break;
+//         }
      }
  }

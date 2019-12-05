@@ -39,7 +39,7 @@
 
     async Task SaveNewProduct() {
         //Save Product here
-        var i = 0;
+        //var i = 0;
         newProduct.Id = Guid.NewGuid();
         newProduct.DistributorId = distributor.Id;
         storeService.SaveNewProduct(newProduct);
