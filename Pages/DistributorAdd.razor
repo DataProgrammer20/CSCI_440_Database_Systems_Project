@@ -12,10 +12,10 @@
         </div>
         <div class="col-6">
             <h3>Add New Product</h3>
-            <div><label>Name:</label><input type='text' @bind-value=@newProduct.name /> </div>
-            <div><label>Cost:</label><input type='text' @bind-value=@newProduct.cost /> </div>
-            <div><label>Inventory Count:</label><input type='text' @bind-value=@newProduct.inventoryCount /> </div>
-            <div><label>Minimum Age To Sell:</label><input type='text' @bind-value=@newProduct.minAgeRestriction /> </div>
+            <div><label>Name:</label><input type='text' @bind-value=@newProduct.Name /> </div>
+            <div><label>Cost:</label><input type='text' @bind-value=@newProduct.Cost /> </div>
+            <div><label>Inventory Count:</label><input type='text' @bind-value=@newProduct.InventoryCount /> </div>
+            <div><label>Minimum Age To Sell:</label><input type='text' @bind-value=@newProduct.MinAgeRestriction /> </div>
             <button @onclick=@SaveNewProduct>Save New Product</button>
         </div>
     </div>
@@ -34,16 +34,16 @@
 
     //List<StoreService.Product> currentProducts = null;
     protected override async Task OnInitializedAsync() {
-        currentProducts = await storeService.GetDistributorsProducts(distributor.id);
+        currentProducts = await storeService.GetDistributorsProducts(distributor.Id);
     }
 
     async Task SaveNewProduct() {
         //Save Product here
-        var i = 0;
-        newProduct.id = Guid.NewGuid();
-        newProduct.distributorID = distributor.id;
+        //var i = 0;
+        newProduct.Id = Guid.NewGuid();
+        newProduct.DistributorId = distributor.Id;
         storeService.SaveNewProduct(newProduct);
-        currentProducts = await storeService.GetDistributorsProducts(distributor.id);
+        currentProducts = await storeService.GetDistributorsProducts(distributor.Id);
         await onChanged.InvokeAsync(null);
     }
 

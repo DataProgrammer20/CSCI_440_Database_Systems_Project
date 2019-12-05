@@ -15,11 +15,11 @@
             <th width="20%">Sales Total</th>
         </tr>
         @foreach (Tuple<StoreService.Product, int> t in currentProductsAndQuanities) {
-            var total = t.Item2 * Convert.ToDouble(t.Item1.inventoryCount);
+            var total = t.Item2 * Convert.ToDouble(t.Item1.InventoryCount);
             <tr>
-                <td>@t.Item1.name</td>
-                <td>@t.Item1.cost.ToString("c")</td>
-                <td>@t.Item1.inventoryCount</td>
+                <td>@t.Item1.Name</td>
+                <td>@t.Item1.Cost.ToString("c")</td>
+                <td>@t.Item1.InventoryCount</td>
                 <td>@t.Item2</td>
                 <td>@total.ToString("c")</td>
 
@@ -35,7 +35,7 @@
     public List<Tuple<StoreService.Product, int>> currentProductsAndQuanities { get; set; }
 
     protected override async Task OnInitializedAsync() {
-        currentProductsAndQuanities = await storeService.getSalesByDistributer(distributor.id);
+        currentProductsAndQuanities = await storeService.GetSalesByDistributor(distributor.Id);
 
     }
 

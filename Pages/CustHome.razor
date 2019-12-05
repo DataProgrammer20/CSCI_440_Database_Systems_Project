@@ -1,7 +1,6 @@
 ﻿@page "/CustHome"
 @using Project_v2.Data
-@using System.Collections.Generic
-@inject StoreService  storeService
+@inject StoreService  StoreService
 
 <p>CustHome</p>
 <div class="row">
@@ -48,3 +47,81 @@
         StateHasChanged();
     }
 }
+<p>Customer Shopping Cart</p>
+
+@code {
+     private StoreService.Customer _selectedCustomer; 
+     private List<StoreService.Customer> _customers; 
+     private List<StoreService.Product> _currentCart;
+     private int _selectedScreen;
+
+     protected override async Task OnInitializedAsync()
+     {
+         _customers = await StoreService.GetCustomers();
+     } 
+ 
+     void SelectScreen(int screenNumber) 
+     { 
+        if (screenNumber == 0) { 
+             _selectedCustomer = null; 
+      }
+         _selectedScreen = screenNumber; 
+     }
+     
+     async Task SelectCustomer(StoreService.Customer c)
+     {
+         _currentCart = await StoreService.GetCustomerProducts(c.Id);
+     } 
+ 
+     async Task Refresh() { 
+         await SelectCustomer(_selectedCustomer); 
+         StateHasChanged();
+     } 
+ } 
+
+ @if (_selectedCustomer == null) { 
+     <div> 
+         <label>Select Customer: </label> 
+         @if (_customers != null) { 
+             <select> 
+                 @foreach (var c in _customers) { 
+                     <option @onclick=@(e => SelectCustomer(c)) value=;@c.Id>@c.Name</option> 
+                 } 
+             </select> 
+         } else { 
+            <span>Loading...</span> 
+         } 
+     </div> 
+ } else { 
+    <div class="row"> 
+         <div class="col-4">Customer Selected: @_selectedCustomer.Name</div> 
+         <div class="col-2"><button @onclick=@(e =>SelectScreen(0))>Select Customer</button></div> 
+         <div class="col-2"><button @onclick=@(e =>SelectScreen(1))>Add Product</button></div> 
+         <div class="col-2"><button @onclick=@(e =>SelectScreen(2))>Shopping Cart</button></div> 
+         @* <div class="col-2"><button @onclick=@(e =>SelectScreen(3))>Sales</button></div>  *@
+     </div>
+     switch (_selectedScreen)
+     {
+         case 0:
+         {
+             break;
+         }
+         case 1:
+         {
+             <AddToCart customer=@_selectedCustomer currentProducts=@_currentCart onChanged=@Refresh()/>
+             break;
+         }
+         case 2:
+         {
+             <CustomerCart customer=@_selectedCustomer currentProducts=@_currentCart onChanged=@Refresh()/>
+             break;
+         }
+//         case 3:
+//         {
+//             < customer=@selectedCustomer/>
+//             break;
+//         }
+         default:
+             break;
+     }
+ }
