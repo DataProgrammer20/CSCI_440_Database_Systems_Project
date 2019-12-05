@@ -136,7 +136,7 @@ namespace Project_v2.Data
             return results;
         }
 
-        public async Task<List<Product>> GetDistributorsProducts(Guid distID) 
+        public async Task<List<Product>> GetDistributorsProducts(Guid distId) 
         {
             List<Product> results = new List<Product>();
 
@@ -151,7 +151,7 @@ namespace Project_v2.Data
                 WHERE distributerId = @distID
                 ORDER BY name;
                 ";
-            cmd.Parameters.AddWithValue("distID", distID);
+            cmd.Parameters.AddWithValue("distID", distId);
             var rdr = await cmd.ExecuteReaderAsync();
 
             while (await rdr.ReadAsync()) 
@@ -191,7 +191,7 @@ namespace Project_v2.Data
 
             cmd.ExecuteNonQuery();
         }
-        public async Task<List<Tuple<Product,int>>> getSalesByDistributer(Guid distID) 
+        public async Task<List<Tuple<Product,int>>> GetSalesByDistributor(Guid distId) 
         {
             List<Tuple<Product,int>> results = new List<Tuple<Product,int>>();
 
@@ -207,7 +207,7 @@ namespace Project_v2.Data
                 WHERE p.distributerId = @distID
                 GROUP BY p.id,p.name,p.cost,p.inventory,p.minAgeRestrictionInYears,p.distributerId;
                 ";
-            cmd.Parameters.AddWithValue("distID", distID);
+            cmd.Parameters.AddWithValue("distID", distId);
             var rdr = await cmd.ExecuteReaderAsync();
 
             while (await rdr.ReadAsync()) 
@@ -241,7 +241,7 @@ namespace Project_v2.Data
             cmd.ExecuteNonQuery();
         }
 
-        public async void getCart (Customer c) 
+        public async void GetCart (Customer c) 
         {
             List<Tuple<Product, int>> results = new List<Tuple<Product, int>>();
 
@@ -270,10 +270,9 @@ namespace Project_v2.Data
                 };
                 results.Add(new Tuple<Product, int>(p, rdr.GetInt32(6)));
             }
-
         }
 
-        public async void addToCart(Customer c, Product p) 
+        public async void AddToCart(Customer c, Product p) 
         {
             var conn = new SqlConnection(connStr);
             await conn.OpenAsync();

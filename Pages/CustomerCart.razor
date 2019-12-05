@@ -3,7 +3,8 @@
 
 <div><h3>Cart:</h3></div>
 
- @if (cartLines == null) { 
+ @if (cartLines == null) 
+ { 
      <div></div> 
  } else { 
      <table width="100%"> 
@@ -13,7 +14,8 @@
              <th width="20%">Quanity</th> 
              <th width="20%">Remove</th> 
          </tr> 
-     @foreach (StoreService.Product p in cartLines) { 
+     @foreach (StoreService.Product p in cartLines) 
+     { 
          <tr> 
              <td>@p.name</td> 
              <td>@p.cost.ToString("c")</td> 
@@ -23,12 +25,13 @@
      } 
      </table> 
  } 
- @code { 
-     [Parameter] 
-     public StoreService.Customer customer { get; set; } 
+ @code 
+{ 
+     [Parameter]
+     private StoreService.Customer customer { get; set; } 
 
-     [Parameter] 
-     public List<Tuple<StoreService.Product, int>> cartLines {get;set;} 
+     [Parameter]
+     private List<Tuple<StoreService.Product, int>> cartLines { get; set; } 
 
      [Parameter] 
      public EventCallback onChanged { get; set; } 
@@ -36,17 +39,21 @@
      StoreService.Product newProduct = new StoreService.Product();
      
      //List<StoreService.Product> currentProducts = null; *@
-     protected override async Task OnInitializedAsync() {
-         cartLines = await StoreService.getCart(customer); 
+     protected override async Task OnInitializedAsync() 
+     {
+         cartLines = await StoreService.GetCart(customer); 
      }
 
-     async Task SaveNewProduct() {
-         //Save Product here *@
-         var i = 0;
-         newProduct.id = Guid.NewGuid();
-         newProduct.distributorID = distributor.id;
-         StoreService.SaveNewProduct(newProduct);
-         currentProducts = await StoreService.GetDistributorsProducts(distributor.id);
-         await onChanged.InvokeAsync(null); 
-     } 
+     
+//     async Task SaveNewProduct()
+//     {
+//         // var distributor;
+//         //Save Product here *@
+//         var i = 0;
+//         newProduct.id = Guid.NewGuid();
+//         newProduct.distributorID = distributor.id;
+//         StoreService.SaveNewProduct(newProduct);
+//         var currentProducts = await StoreService.GetDistributorsProducts(distributor.id);
+//         await onChanged.InvokeAsync(null); 
+//     } 
  } 
