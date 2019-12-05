@@ -1,52 +1,51 @@
-﻿@using Project_v2.Data
-@using System.Collections.Generic
-@inject StoreService  storeService
+﻿ @using Project_v2.Data *@
+ @using System.Collections.Generic
+ @inject StoreService  storeService 
+     <div><h3>Cart:</h3></div> 
+ @if (cartLines == null) { 
+     <div></div> 
+ } else { 
+     <table width="100%"> 
+         <tr> 
+             <th width="40%">Name</th>
+             <th width="20%">Cost</th> 
+             <th width="20%">Quanity</th> 
+             <th width="20%">Remove</th> 
+         </tr> 
+     @foreach (StoreService.Product p in cartLines) { 
+         <tr> 
+             <td>@p.name</td> 
+             <td>@p.cost.ToString("c")</td> 
+             <td>@p.inventoryCount</td> 
+            <td><button @onclick=@(e=>DeleteProduct(p)) >Delete Product</button></td> 
+         </tr> 
+     } 
+     </table> 
+ } 
+ @code { 
+     [Parameter] 
+     public StoreService.Customer customer { get; set; } 
 
-    <div><h3>Cart:</h3></div>
-@if (cartLines == null) {
-    <div></div>
-} else {
-    <table width="100%">
-        <tr>
-            <th width="40%">Name</th>
-            <th width="20%">Cost</th>
-            <th width="20%">Quanity</th>
-            <th width="20%">Remove</th>
-        </tr>
-    @foreach (StoreService.Product p in cartLines) {
-        <tr>
-            <td>@p.name</td>
-            <td>@p.cost.ToString("c")</td>
-            <td>@p.inventoryCount</td>
-            <td><button @onclick=@(e=>DeleteProduct(p)) >Delete Product</button></td>
-        </tr>
-    }
-    </table>
-}
-@code {
-    [Parameter]
-    public StoreService.Customer customer { get; set; }
+     [Parameter] 
+     public List<Tuple<StoreService.Product, int>> cartLines {get;set;} 
 
-    [Parameter]
-    public List<Tuple<StoreService.Product, int>> cartLines {get;set;}
+     [Parameter] 
+     public EventCallback onChanged { get; set; } 
+     
+     StoreService.Product newProduct = new StoreService.Product();
+     
+     //List<StoreService.Product> currentProducts = null; *@
+     protected override async Task OnInitializedAsync() {
+         cartLines = await storeService.getCart(customer); 
+     }
 
-    [Parameter]
-    public EventCallback onChanged { get; set; }
-
-    StoreService.Product newProduct = new StoreService.Product();
-
-    //List<StoreService.Product> currentProducts = null;
-    protected override async Task OnInitializedAsync() {
-        cartLines = await storeService.getCart(customer);
-    }
-
-    async Task SaveNewProduct() {
-        //Save Product here
-        var i = 0;
-        newProduct.id = Guid.NewGuid();
-        newProduct.distributorID = distributor.id;
-        storeService.SaveNewProduct(newProduct);
-        currentProducts = await storeService.GetDistributorsProducts(distributor.id);
-        await onChanged.InvokeAsync(null);
-    }
-}
+     async Task SaveNewProduct() {
+         //Save Product here *@
+         var i = 0;
+         newProduct.id = Guid.NewGuid();
+         newProduct.distributorID = distributor.id;
+         storeService.SaveNewProduct(newProduct);
+         currentProducts = await storeService.GetDistributorsProducts(distributor.id);
+         await onChanged.InvokeAsync(null); 
+     } 
+ } 
