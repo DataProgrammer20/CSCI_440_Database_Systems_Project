@@ -4,6 +4,37 @@
 
 <p>CustHome</p>
 
+@code {
+     StoreService.Distributor selectedDistributor;
+     private StoreService.Customer selectedCustomer = null; 
+     List<StoreService.Distributor> distributors; 
+     List<StoreService.Product> currentProducts;
+     int selectedScreen;
+
+     protected override async Task OnInitializedAsync()
+     {
+         distributors = await StoreService.GetDistributors();
+     } 
+ 
+     void SelectScreen(int screenNumber) 
+     { 
+        if (screenNumber == 0) { 
+             selectedDistributor = null; 
+      }
+         selectedScreen = screenNumber; 
+     }
+     
+     async Task SelectDistributor(StoreService.Distributor d) 
+     {
+         currentProducts = await StoreService.GetDistributorsProducts(d.Id); 
+     } 
+ 
+     async Task Refresh() { 
+         await SelectDistributor(selectedDistributor); 
+         StateHasChanged(); 
+     } 
+ } 
+
  @if (selectedCustomer == null) { 
      <div> 
          <label>Select Distributor: </label> 
@@ -47,35 +78,4 @@
              break;
          }
      }
- } 
-
- @code {
-     StoreService.Distributor selectedDistributor;
-     private StoreService.Customer selectedCustomer = null; 
-     List<StoreService.Distributor> distributors; 
-     List<StoreService.Product> currentProducts;
-     int selectedScreen;
-
-     protected override async Task OnInitializedAsync()
-     {
-         distributors = await StoreService.GetDistributors();
-     } 
- 
-     void SelectScreen(int screenNumber) 
-     { 
-        if (screenNumber == 0) { 
-             selectedDistributor = null; 
-      }
-         selectedScreen = screenNumber; 
-     }
-     
-     async Task SelectDistributor(StoreService.Distributor d) 
-     {
-         currentProducts = await StoreService.GetDistributorsProducts(d.Id); 
-     } 
- 
-     async Task Refresh() { 
-         await SelectDistributor(selectedDistributor); 
-         StateHasChanged(); 
-     } 
- } 
+ }

@@ -240,7 +240,22 @@ namespace Project_v2.Data
             cmd.ExecuteNonQuery();
         }
 
-        public async void GetCart (Customer c) 
+        public async void DeleteProductFromCustomerCart(Product product)
+        {
+            var connection  = new SqlConnection(ConnectionString);
+            await connection.OpenAsync();
+            var cmd = connection.CreateCommand();
+
+            cmd.CommandText = @"
+                DELETE FROM STORE.SHOPPINGCART
+                WHERE pendingOrder = @productID
+                ";
+
+            cmd.Parameters.AddWithValue("productID", product.Id);
+            cmd.ExecuteNonQuery();
+        }
+
+        public async Task<List<Tuple<Product, int>>> GetCart (Customer c) 
         {
             List<Tuple<Product, int>> results = new List<Tuple<Product, int>>();
 
@@ -269,6 +284,8 @@ namespace Project_v2.Data
                 };
                 results.Add(new Tuple<Product, int>(p, rdr.GetInt32(6)));
             }
+
+            return results;
         }
 
         public async void AddToCart(Customer c, Product p) 

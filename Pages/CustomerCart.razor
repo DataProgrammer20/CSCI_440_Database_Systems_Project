@@ -3,45 +3,23 @@
 
 <div><h3>Cart:</h3></div>
 
- @if (cartLines == null) 
- { 
-     <div></div> 
- } else { 
-     <table width="100%"> 
-         <tr> 
-             <th width="40%">Name</th>
-             <th width="20%">Cost</th> 
-             <th width="20%">Quanity</th> 
-             <th width="20%">Remove</th> 
-         </tr> 
-     @foreach (StoreService.Product p in cartLines) 
-     { 
-         <tr> 
-             <td>@p.Name</td> 
-             <td>@p.Cost.ToString("c")</td> 
-             <td>@p.InventoryCount</td> 
-            <td><button @onclick=@(e=>DeleteProduct(p))>Delete Product</button></td> 
-         </tr> 
-     } 
-     </table> 
- } 
- @code 
+@code 
 { 
      [Parameter]
-     private StoreService.Customer customer { get; set; } 
+     public StoreService.Customer Customer { get; set; } 
 
      [Parameter]
-     private List<Tuple<StoreService.Product, int>> cartLines { get; set; } 
+     public List<Tuple<StoreService.Product, int>> CartLines { get; set; } 
 
      [Parameter] 
-     public EventCallback onChanged { get; set; } 
+     public EventCallback OnChanged { get; set; } 
      
-     StoreService.Product newProduct = new StoreService.Product();
+     StoreService.Product _newProduct = new StoreService.Product();
      
      //List<StoreService.Product> currentProducts = null; *@
      protected override async Task OnInitializedAsync() 
      {
-         cartLines = await StoreService.GetCart(customer); 
+         CartLines = await StoreService.GetCart(Customer); 
      }
 
      
@@ -57,3 +35,26 @@
 //         await onChanged.InvokeAsync(null); 
 //     } 
  } 
+
+ @if (CartLines == null) 
+ { 
+     <div></div> 
+ } else { 
+     <table width="100%"> 
+         <tr> 
+             <th width="40%">Name</th>
+             <th width="20%">Cost</th> 
+             <th width="20%">Quanity</th> 
+             <th width="20%">Remove</th> 
+         </tr> 
+     @foreach (Tuple<StoreService.Product, int> p in CartLines) 
+     { 
+         <tr> 
+             <td>@p.Item1.Name</td> 
+             <td>@p.Item1.Cost.ToString("c")</td> 
+             <td>@p.Item1.InventoryCount</td> 
+            <td><button @onclick=@(e=>StoreService.DeleteProductFromCustomerCart(p.Item1))>Delete Product</button></td> 
+         </tr> 
+     } 
+     </table> 
+ }
