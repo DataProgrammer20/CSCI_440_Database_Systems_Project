@@ -107,6 +107,33 @@ namespace Project_v2.Data
             return results;
         }
 
+        public async Task<List<Customer>> GetCustomers()
+        {
+            var result = new List<Customer>();
+            var connection = new SqlConnection(ConnectionString);
+            await connection.OpenAsync();
+            var cmd = connection.CreateCommand();
+
+            cmd.CommandText = @"
+                                SELECT id, name
+                                FROM STORE.CUSTOMER
+                                ORDER BY name;
+                               ";
+
+            var rdr = await cmd.ExecuteReaderAsync();
+            while (await rdr.ReadAsync())
+            {
+                result.Add(
+                    new Customer
+                    {
+                        Id = rdr.GetGuid(0),
+                        Name = rdr.GetString(1)
+                    });
+            }
+
+            return result;
+        }
+
         public async Task<List<Distributor>> GetDistributors() 
         {
             List<Distributor> results = new List<Distributor>();
@@ -122,10 +149,11 @@ namespace Project_v2.Data
                 ";
 
             var rdr = await cmd.ExecuteReaderAsync();
-
-            while (await rdr.ReadAsync()) {
+            while (await rdr.ReadAsync()) 
+            {
                 results.Add(
-                    new Distributor {
+                    new Distributor 
+                    {
                         Id = rdr.GetGuid(0),
                         Name = rdr.GetString(1),
                         AddressId = rdr.GetGuid(2)
@@ -135,6 +163,25 @@ namespace Project_v2.Data
             return results;
         }
 
+        
+        // Work in progress...
+        // =======================================================================
+        public async Task<List<Product>> GetCustomerProducts(Guid customerId)
+        {
+            var result = new List<Product>();
+            var connection = new SqlConnection(ConnectionString);
+            await connection.OpenAsync();
+            var cmd = connection.CreateCommand();
+
+            cmd.CommandText = @"";
+            // Take it from here...
+            // Need to get the products in the Customer's shopping cart...
+
+            return result;
+        }
+        // =======================================================================
+        
+        
         public async Task<List<Product>> GetDistributorsProducts(Guid distId) 
         {
             List<Product> results = new List<Product>();

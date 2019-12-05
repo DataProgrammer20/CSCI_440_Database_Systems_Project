@@ -2,46 +2,45 @@
 @using Project_v2.Data
 @inject StoreService  StoreService
 
-<p>CustHome</p>
+<p>Customer Shopping Cart</p>
 
 @code {
-     StoreService.Distributor selectedDistributor;
-     private StoreService.Customer selectedCustomer = null; 
-     List<StoreService.Distributor> distributors; 
-     List<StoreService.Product> currentProducts;
-     int selectedScreen;
+     private StoreService.Customer _selectedCustomer; 
+     private List<StoreService.Customer> _customers; 
+     private List<StoreService.Product> _currentCart;
+     private int _selectedScreen;
 
      protected override async Task OnInitializedAsync()
      {
-         distributors = await StoreService.GetDistributors();
+         _customers = await StoreService.GetCustomers();
      } 
  
      void SelectScreen(int screenNumber) 
      { 
         if (screenNumber == 0) { 
-             selectedDistributor = null; 
+             _selectedCustomer = null; 
       }
-         selectedScreen = screenNumber; 
+         _selectedScreen = screenNumber; 
      }
      
-     async Task SelectDistributor(StoreService.Distributor d) 
+     async Task SelectCustomer(StoreService.Customer c)
      {
-         currentProducts = await StoreService.GetDistributorsProducts(d.Id); 
+         _currentCart = await StoreService.GetCustomerProducts(c.Id);
      } 
  
      async Task Refresh() { 
-         await SelectDistributor(selectedDistributor); 
-         StateHasChanged(); 
+         await SelectCustomer(_selectedCustomer); 
+         StateHasChanged();
      } 
  } 
 
- @if (selectedCustomer == null) { 
+ @if (_selectedCustomer == null) { 
      <div> 
-         <label>Select Distributor: </label> 
-         @if (distributors != null) { 
+         <label>Select Customer: </label> 
+         @if (_customers != null) { 
              <select> 
-                 @foreach (var d in distributors) { 
-                     <option @onclick=@(e => SelectDistributor(d)) value=;@d.Id>@d.Name</option> 
+                 @foreach (var c in _customers) { 
+                     <option @onclick=@(e => SelectCustomer(c)) value=;@c.Id>@c.Name</option> 
                  } 
              </select> 
          } else { 
@@ -50,13 +49,13 @@
      </div> 
  } else { 
     <div class="row"> 
-         <div class="col-4">Distributor Selected: @selectedCustomer.Name</div> 
-         <div class="col-2"><button @onclick=@(e =>SelectScreen(0))>Select Distributor</button></div> 
+         <div class="col-4">Customer Selected: @_selectedCustomer.Name</div> 
+         <div class="col-2"><button @onclick=@(e =>SelectScreen(0))>Select Customer</button></div> 
          <div class="col-2"><button @onclick=@(e =>SelectScreen(1))>Add Product</button></div> 
-         <div class="col-2"><button @onclick=@(e =>SelectScreen(2))>Inventory</button></div> 
-         <div class="col-2"><button @onclick=@(e =>SelectScreen(3))>Sales</button></div> 
+         <div class="col-2"><button @onclick=@(e =>SelectScreen(2))>Shopping Cart</button></div> 
+         @* <div class="col-2"><button @onclick=@(e =>SelectScreen(3))>Sales</button></div>  *@
      </div>
-     switch (selectedScreen)
+     switch (_selectedScreen)
      {
          case 0:
          {
@@ -64,12 +63,12 @@
          }
          case 1:
          {
-             <CustomerAdd customer=@selectedCustomer currentProducts=@currentProducts onChanged=Refresh/>
+             <AddToCart customer=@_selectedCustomer currentProducts=@_currentCart onChanged=@Refresh()/>
              break;
          }
          case 2:
          {
-             <CustomerCart customer=@selectedCustomer currentProducts=@currentProducts onChanged=Refresh/>
+             <CustomerCart customer=@_selectedCustomer currentProducts=@_currentCart onChanged=@Refresh()/>
              break;
          }
 //         case 3:
@@ -77,5 +76,7 @@
 //             < customer=@selectedCustomer/>
 //             break;
 //         }
+         default:
+             break;
      }
  }
