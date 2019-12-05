@@ -34,11 +34,6 @@
     [Parameter]
     public EventCallback onChanged { get; set; }
 
-    protected override async Task OnInitializedAsync() {
-        //currentProducts = await storeService.GetDistributorsProducts(distributor.id);
-
-    }
-
     async Task DeleteProduct(StoreService.Product p) {
         StoreService.DeleteProduct(p);
         await onChanged.InvokeAsync(null);
