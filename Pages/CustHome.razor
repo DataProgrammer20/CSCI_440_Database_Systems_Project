@@ -10,7 +10,7 @@
          @if (distributors != null) { 
              <select> 
                  @foreach (var d in distributors) { 
-                     <option @onclick=@(e => SelectDistributor(d)) value=;@d.id>@d.name</option> 
+                     <option @onclick=@(e => SelectDistributor(d)) value=;@d.Id>@d.Name</option> 
                  } 
              </select> 
          } else { 
@@ -19,7 +19,7 @@
      </div> 
  } else { 
     <div class="row"> 
-         <div class="col-4">Distributor Selected: @selectedCustomer.name</div> 
+         <div class="col-4">Distributor Selected: @selectedCustomer.Name</div> 
          <div class="col-2"><button @onclick=@(e =>SelectScreen(0))>Select Distributor</button></div> 
          <div class="col-2"><button @onclick=@(e =>SelectScreen(1))>Add Product</button></div> 
          <div class="col-2"><button @onclick=@(e =>SelectScreen(2))>Inventory</button></div> 
@@ -71,7 +71,7 @@
      
      async Task SelectDistributor(StoreService.Distributor d) 
      {
-         currentProducts = await StoreService.GetDistributorsProducts(d.id); 
+         currentProducts = await StoreService.GetDistributorsProducts(d.Id); 
      } 
  
      async Task Refresh() { 

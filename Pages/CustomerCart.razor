@@ -17,9 +17,9 @@
      @foreach (StoreService.Product p in cartLines) 
      { 
          <tr> 
-             <td>@p.name</td> 
-             <td>@p.cost.ToString("c")</td> 
-             <td>@p.inventoryCount</td> 
+             <td>@p.Name</td> 
+             <td>@p.Cost.ToString("c")</td> 
+             <td>@p.InventoryCount</td> 
             <td><button @onclick=@(e=>DeleteProduct(p))>Delete Product</button></td> 
          </tr> 
      } 

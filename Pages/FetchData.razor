@@ -25,9 +25,9 @@ else
             @foreach (StoreService.Product c in products)
             {
             <tr>
-                <td @onclick=@(e => SelectName(c.name))>@c.name</td>
-                <td @onclick=@(e => SelectName(c.cost.ToString()))>@c.cost.ToString("c")</td>
-                <td @onclick=@(e => SelectName(c.inventoryCount.ToString()))>@c.inventoryCount</td>
+                <td @onclick=@(e => SelectName(c.Name))>@c.Name</td>
+                <td @onclick=@(e => SelectName(c.Cost.ToString()))>@c.Cost.ToString("c")</td>
+                <td @onclick=@(e => SelectName(c.InventoryCount.ToString()))>@c.InventoryCount</td>
             </tr>
             }
         </tbody>

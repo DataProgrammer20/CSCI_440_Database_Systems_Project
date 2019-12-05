@@ -7,80 +7,79 @@ namespace Project_v2.Data
 {
     public class StoreService
     {
-        private string connStr = "Server=tcp:msu440.database.windows.net,1433;Initial Catalog=msu440;Persist Security Info=False;User ID=allen@psimpsonmotionencoding.onmicrosoft.com;Password=MSUDatabases440!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication=\"Active Directory Password\";";
+        private string ConnectionString = "Server=tcp:msu440.database.windows.net,1433;Initial Catalog=msu440;Persist Security Info=False;User ID=allen@psimpsonmotionencoding.onmicrosoft.com;Password=MSUDatabases440!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication=\"Active Directory Password\";";
         public class Address
         {
-            public Guid id { get; set; }
-            public string city { get; set; }
-            public string state { get; set; }
-            public string country { get; set; }
-            public string addressLine1 { get; set; }
-            public string addressLine2 { get; set; }
+            public Guid Id { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+            public string Country { get; set; }
+            public string AddressLine1 { get; set; }
+            public string AddressLine2 { get; set; }
         }
 
         public class Product
         {
-            public Guid id { get; set; }
-            public string name { get; set; }
-            public double cost { get; set; }
-            public int inventoryCount { get; set; }
-            public int minAgeRestriction { get; set; }
-            public Guid distributorID { get; set; }
+            public Guid Id { get; set; }
+            public string Name { get; set; }
+            public double Cost { get; set; }
+            public int InventoryCount { get; set; }
+            public int MinAgeRestriction { get; set; }
+            public Guid DistributorId { get; set; }
         }
 
         public class Card
         {
-            public Guid id { get; set; }
-            public string cardNumber { get; set; }
-            public string cvv { get; set; }
-            public DateTime expires { get; set; }
-            public string cardType { get; set; }
-            public string cardHolder { get; set; }
+            public Guid Id { get; set; }
+            public string CardNumber { get; set; }
+            public string Cvv { get; set; }
+            public DateTime Expires { get; set; }
+            public string CardType { get; set; }
+            public string CardHolder { get; set; }
         }
 
         public class Customer
         {
-            public Guid id { get; set; }
-            public string name { get; set; }
-            public string email { get; set; }
-            public DateTime DOB { get; set; }
-            public string username { get; set; }
-            public string passwordSalt { get; set; }
-            public string encryptedPassword { get; set; }
-            public Guid shippingAddress { get; set; }
-            public Guid billingAddress { get; set; }
-            public List<Guid> cards { get; set; }
+            public Guid Id { get; set; }
+            public string Name { get; set; }
+            public string Email { get; set; }
+            public DateTime Dob { get; set; }
+            public string Username { get; set; }
+            public string PasswordSalt { get; set; }
+            public string EncryptedPassword { get; set; }
+            public Guid ShippingAddress { get; set; }
+            public Guid BillingAddress { get; set; }
+            public List<Guid> Cards { get; set; }
         }
 
         public class Distributor
         {
-            public Guid id { get; set; }
-            public string name { get; set; }
-            public Guid addressID { get; set; }
+            public Guid Id { get; set; }
+            public string Name { get; set; }
+            public Guid AddressId { get; set; }
         }
 
         public class Order
         {
-            public Guid orderId { get; set; }
-            public Guid customerId { get; set; }
-            public int trackingNumber { get; set; }
-            public DateTime date { get; set; }
+            public Guid OrderId { get; set; }
+            public Guid CustomerId { get; set; }
+            public int TrackingNumber { get; set; }
+            public DateTime Date { get; set; }
         }
 
         public class OrderLine
         {
-            public Guid id { get; set; }
-            public Guid orderId { get; set; }
-            public int productQuanityt { get; set; }
-            public Guid productId { get; set; }
-            public double lineCost { get; set; }
-
+            public Guid Id { get; set; }
+            public Guid OrderId { get; set; }
+            public int ProductQuantity { get; set; }
+            public Guid ProductId { get; set; }
+            public double LineCost { get; set; }
         }
 
         public async Task<List<Product>> GetOrdersFor(Guid customerId) 
         {
             List<Product> results = new List<Product>();
-            var conn = new SqlConnection(connStr);
+            var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
@@ -95,12 +94,12 @@ namespace Project_v2.Data
             while (await rdr.ReadAsync()) {
                 results.Add(
                     new Product {
-                        id = rdr.GetGuid(0),
-                        name = rdr.GetString(1),
-                        cost = rdr.GetDouble(2),
-                        inventoryCount = rdr.GetInt32(3),
-                        minAgeRestriction = rdr.GetInt32(4),
-                        distributorID = rdr.GetGuid(5)
+                        Id = rdr.GetGuid(0),
+                        Name = rdr.GetString(1),
+                        Cost = rdr.GetDouble(2),
+                        InventoryCount = rdr.GetInt32(3),
+                        MinAgeRestriction = rdr.GetInt32(4),
+                        DistributorId = rdr.GetGuid(5)
                     }
                  );
             }
@@ -111,7 +110,7 @@ namespace Project_v2.Data
         public async Task<List<Distributor>> GetDistributors() 
         {
             List<Distributor> results = new List<Distributor>();
-            var conn = new SqlConnection(connStr);
+            var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
@@ -127,9 +126,9 @@ namespace Project_v2.Data
             while (await rdr.ReadAsync()) {
                 results.Add(
                     new Distributor {
-                        id = rdr.GetGuid(0),
-                        name = rdr.GetString(1),
-                        addressID = rdr.GetGuid(2)
+                        Id = rdr.GetGuid(0),
+                        Name = rdr.GetString(1),
+                        AddressId = rdr.GetGuid(2)
                     }
                  );
             }
@@ -140,7 +139,7 @@ namespace Project_v2.Data
         {
             List<Product> results = new List<Product>();
 
-            var conn = new SqlConnection(connStr);
+            var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
@@ -158,12 +157,12 @@ namespace Project_v2.Data
             {
                 results.Add(
                     new Product {
-                        id = rdr.GetGuid(0),
-                        name = rdr.GetString(1),
-                        cost = rdr.GetDouble(2),
-                        inventoryCount = rdr.GetInt32(3),
-                        minAgeRestriction = rdr.GetInt32(4),
-                        distributorID = rdr.GetGuid(5)
+                        Id = rdr.GetGuid(0),
+                        Name = rdr.GetString(1),
+                        Cost = rdr.GetDouble(2),
+                        InventoryCount = rdr.GetInt32(3),
+                        MinAgeRestriction = rdr.GetInt32(4),
+                        DistributorId = rdr.GetGuid(5)
                     }
                  );
             }
@@ -173,7 +172,7 @@ namespace Project_v2.Data
         public async void SaveNewProduct(Product prod) 
         {
             List<Product> results = new List<Product>();
-            var conn = new SqlConnection(connStr);
+            var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
@@ -182,12 +181,12 @@ namespace Project_v2.Data
                 INSERT INTO STORE.PRODUCT VALUES 
                 (@id,@name,@cost,@inv,@minAge,@distId);
                 ";
-            cmd.Parameters.AddWithValue("id", prod.id);
-            cmd.Parameters.AddWithValue("name", prod.name);
-            cmd.Parameters.AddWithValue("cost", prod.cost);
-            cmd.Parameters.AddWithValue("inv", prod.inventoryCount);
-            cmd.Parameters.AddWithValue("minAge", prod.minAgeRestriction);
-            cmd.Parameters.AddWithValue("distId", prod.distributorID);
+            cmd.Parameters.AddWithValue("id", prod.Id);
+            cmd.Parameters.AddWithValue("name", prod.Name);
+            cmd.Parameters.AddWithValue("cost", prod.Cost);
+            cmd.Parameters.AddWithValue("inv", prod.InventoryCount);
+            cmd.Parameters.AddWithValue("minAge", prod.MinAgeRestriction);
+            cmd.Parameters.AddWithValue("distId", prod.DistributorId);
 
             cmd.ExecuteNonQuery();
         }
@@ -195,7 +194,7 @@ namespace Project_v2.Data
         {
             List<Tuple<Product,int>> results = new List<Tuple<Product,int>>();
 
-            var conn = new SqlConnection(connStr);
+            var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
@@ -213,12 +212,12 @@ namespace Project_v2.Data
             while (await rdr.ReadAsync()) 
             {
                 var p = new Product {
-                        id = rdr.GetGuid(0),
-                        name = rdr.GetString(1),
-                        cost = rdr.GetDouble(2),
-                        inventoryCount = rdr.GetInt32(3),
-                        minAgeRestriction = rdr.GetInt32(4),
-                        distributorID = rdr.GetGuid(5)
+                        Id = rdr.GetGuid(0),
+                        Name = rdr.GetString(1),
+                        Cost = rdr.GetDouble(2),
+                        InventoryCount = rdr.GetInt32(3),
+                        MinAgeRestriction = rdr.GetInt32(4),
+                        DistributorId = rdr.GetGuid(5)
                 };
                 results.Add(new Tuple<Product, int>(p,rdr.GetInt32(6)));
             }
@@ -227,7 +226,7 @@ namespace Project_v2.Data
 
         public async void DeleteProduct(Product p) 
         {
-            var conn = new SqlConnection(connStr);
+            var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
@@ -236,7 +235,7 @@ namespace Project_v2.Data
                 DELETE FROM STORE.PRODUCT 
                 WHERE id = @productID
                 ";
-            cmd.Parameters.AddWithValue("productID", p.id);
+            cmd.Parameters.AddWithValue("productID", p.Id);
             
             cmd.ExecuteNonQuery();
         }
@@ -245,7 +244,7 @@ namespace Project_v2.Data
         {
             List<Tuple<Product, int>> results = new List<Tuple<Product, int>>();
 
-            var conn = new SqlConnection(connStr);
+            var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
@@ -255,18 +254,18 @@ namespace Project_v2.Data
                 FROM STORE.PRODUCT p INNER JOIN STORE.ORDERLINE ol ON p.id = ol.productId INNER JOIN cartOrders o ON o.orderID = ol.orderID
                 WHERE o.customerID = @custID 	
                 ";
-            cmd.Parameters.AddWithValue("custID", c.id);
+            cmd.Parameters.AddWithValue("custID", c.Id);
             var rdr = await cmd.ExecuteReaderAsync();
 
             while (await rdr.ReadAsync()) 
             {
                 var p = new Product {
-                    id = rdr.GetGuid(0),
-                    name = rdr.GetString(1),
-                    cost = rdr.GetDouble(2),
-                    inventoryCount = rdr.GetInt32(3),
-                    minAgeRestriction = rdr.GetInt32(4),
-                    distributorID = rdr.GetGuid(5)
+                    Id = rdr.GetGuid(0),
+                    Name = rdr.GetString(1),
+                    Cost = rdr.GetDouble(2),
+                    InventoryCount = rdr.GetInt32(3),
+                    MinAgeRestriction = rdr.GetInt32(4),
+                    DistributorId = rdr.GetGuid(5)
                 };
                 results.Add(new Tuple<Product, int>(p, rdr.GetInt32(6)));
             }
@@ -274,7 +273,7 @@ namespace Project_v2.Data
 
         public async void AddToCart(Customer c, Product p) 
         {
-            var conn = new SqlConnection(connStr);
+            var conn = new SqlConnection(ConnectionString);
             await conn.OpenAsync();
             var cmd = conn.CreateCommand();
 
@@ -313,8 +312,8 @@ namespace Project_v2.Data
                         ROLLBACK TRANSACTION;
                     END CATCH
                 ";
-            cmd.Parameters.AddWithValue("custID", c.id);
-            cmd.Parameters.AddWithValue("prodID", p.id);
+            cmd.Parameters.AddWithValue("custID", c.Id);
+            cmd.Parameters.AddWithValue("prodID", p.Id);
 
             cmd.ExecuteNonQuery();
         }

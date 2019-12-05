@@ -14,10 +14,10 @@
         </tr>
         @foreach (var p in currentProducts) {
             <tr>
-                <td>@p.name</td>
-                <td>@p.cost.ToString("c")</td>
-                <td>@p.inventoryCount</td>
-                <td>@p.minAgeRestriction</td>
+                <td>@p.Name</td>
+                <td>@p.Cost.ToString("c")</td>
+                <td>@p.InventoryCount</td>
+                <td>@p.MinAgeRestriction</td>
                 <td><button @onclick=@(e=>DeleteProduct(p))>Delete Product</button></td>
             </tr>
         }
