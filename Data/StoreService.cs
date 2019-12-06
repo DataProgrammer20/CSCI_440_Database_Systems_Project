@@ -291,7 +291,7 @@ namespace Project_v2.Data
             cmd.ExecuteNonQuery();
         }
 
-        public async void DeleteProductFromCustomerCart(Product product)
+        public async void DeleteProductFromCustomerCart(Product product,Customer customer)
         {
             var connection = new SqlConnection(ConnectionString);
             await connection.OpenAsync();

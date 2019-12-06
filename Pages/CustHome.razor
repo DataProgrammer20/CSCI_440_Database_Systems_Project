@@ -2,69 +2,49 @@
 @using Project_v2.Data
 @inject StoreService  StoreService
 
-<p>CustHome</p>
-<div class="row">
+<p>Customer Shopping Cart</p>
 
-    @if (selectedCustomer == null)
-    {
-    <div>
-        <label>Select Customer: </label>
-        @if (customers != null)
-        {
-            <select>
-                @foreach (var c in customers)
-                {
-                    <option @onclick=@(e => SelectCustomer(c)) value=;@c.Id>@c.Name</option>
-
-                }
-            </select>
-        }
-        else
-        {
-            <span>Loading...</span>
-        }
+ @if (selectedCustomer == null) { 
+     <div> 
+         <label>Select Customer: </label> 
+         @if (customers != null) { 
+             <select> 
+                 @foreach (var c in customers) { 
+                     <option @onclick=@(e => SelectCustomer(c)) value=@c.Id>@c.Name</option> 
+                 } 
+             </select> 
+         } else { 
+            <span>Loading...</span> 
+         } 
+     </div> 
+ } else { 
+    <div class="row">
+        <div class="col-6">
+            <p>TEST</p>
+            @*WORK ON DISPLAYING AN INVENTORY OF ALL PRODUCTS!*@
+        </div>
+        <div class="col-6">
+            <CustomerCart Customer=@selectedCustomer CartLines=@currentCart OnChanged="Refresh" />
+        </div>
     </div>
     }
-    else
-    {
-    <div class="col-6">
-        @*WORK ON DISPLAYING AN INVENTORY OF ALL PRODUCTS!*@
-    </div>
-    <div class="col-6">
-        <CustomerCart customer=@selectedCustomer cartLines=@currentCart onChanged="Refresh" />
-    </div>
-    }
-</div>
 
-@code {
-    public StoreService.Customer selectedCustomer = null;
-    List<StoreService.Customer> customers = null;
-    List<Tuple<StoreService.Product, int>> currentCart = null;
+    @code {
+private StoreService.Customer selectedCustomer;
+    private List<StoreService.Customer> customers;
+    private List<Tuple<StoreService.Product, int>> currentCart;
 
-    int selectedScreen = 0;
-    
-     protected override async Task OnInitializedAsync()
-     {
-         customers = await StoreService.GetCustomers();
-     } 
-
-    void SelectScreen(int screenNumber)
-    {
-        if (screenNumber == 0)
-        {
-            selectedCustomer = null;
-        }
-
-        selectedScreen = screenNumber;
+    protected override async Task OnInitializedAsync() {
+        customers = await StoreService.GetCustomers();
     }
 
-     async Task SelectCustomer(StoreService.Customer c)
-     {
-         currentCart = await StoreService.GetCart(c);
-     } 
- 
-     async Task Refresh() { 
-         await SelectCustomer(selectedCustomer); 
-         StateHasChanged();
-     } 
-}
+    async Task SelectCustomer(StoreService.Customer c) {
+        selectedCustomer = c;
+        currentCart = await StoreService.GetCart(c);
+    }
+
+    async Task Refresh() {
+        await SelectCustomer(selectedCustomer);
+        StateHasChanged();
+    }
+    }

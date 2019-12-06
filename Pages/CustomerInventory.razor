@@ -1,8 +1,8 @@
 ﻿@using Project_v2.Data
 @inject StoreService  StoreService
 
-<h3>Distributor Inventory</h3>
-@if (currentProducts == null) {
+<h3>Inventory</h3>
+@if (products == null) {
     <div>Loading...</div>
 } else {
     <table width="100%">
@@ -12,13 +12,13 @@
             <th width="20%">Inventory Count</th>
             <th width="20%">Minimum Age to Buy</th>
         </tr>
-        @foreach (var p in currentProducts) {
+        @foreach (var p in products) {
             <tr>
                 <td>@p.Name</td>
                 <td>@p.Cost.ToString("c")</td>
                 <td>@p.InventoryCount</td>
                 <td>@p.MinAgeRestriction</td>
-                <td><button @onclick=@(e=>DeleteProduct(p))>Delete Product</button></td>
+                <td><button @onclick=@(e=>RemoveProduct(p,customer))>Delete Product</button></td>
             </tr>
         }
     </table>
@@ -26,16 +26,16 @@
 
 @code {
     [Parameter]
-    public StoreService.Distributor distributor { get; set; }
+    public StoreService.Customer customer { get; set; }
 
     [Parameter]
-    public List<StoreService.Product> currentProducts { get; set; }
+    public List<StoreService.Product> products { get; set; }
 
     [Parameter]
     public EventCallback onChanged { get; set; }
 
-    async Task DeleteProduct(StoreService.Product p) {
-        StoreService.DeleteProduct(p);
-        await onChanged.InvokeAsync(null);
+    async Task RemoveProduct(StoreService.Product p, StoreService.Customer c) {
+    StoreService.DeleteProductFromCustomerCart(p,c);
+    await onChanged.InvokeAsync(null);
     }
 }

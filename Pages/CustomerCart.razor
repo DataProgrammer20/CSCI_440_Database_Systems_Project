@@ -1,56 +1,61 @@
-﻿ @using Project_v2.Data
- @inject StoreService  StoreService
+﻿@using Project_v2.Data
+@inject StoreService  StoreService
 
-    <div><h3>Cart:</h3></div>
-@if (cartLines == null) {
+<div><h3>Cart:</h3></div>
+
+
+
+@if (CartLines == null) {
     <div></div>
 } else {
-    <table width="100%">
-        <tr>
-            <th width="40%">Name</th>
-            <th width="20%">Cost</th>
-            <th width="20%">Quanity</th>
-            <th width="20%">Remove</th>
-        </tr>
-        @foreach (Tuple<StoreService.Product,int> p in cartLines) {
+<table width="100%">
+    <tr>
+        <th width="40%">Name</th>
+        <th width="20%">Quanity</th>
+        <th width="20%">Cost</th>
+        <th width="20%">Remove</th>
+    </tr>
+    @foreach (Tuple<StoreService.Product, int> p in CartLines) {
         <tr>
             <td>@p.Item1.Name</td>
-            <td>@p.Item1.Cost.ToString("c")</td>
             <td>@p.Item2</td>
-            <td><button @onclick=@(e=>RemoveProduct(p.Item1,customer.Id)) >Delete Product</button></td>
+            <td>@p.Item1.Cost.ToString("c")</td>
+            <td><button @onclick=@(e=>RemoveProduct(p.Item1,Customer.Id))>Delete Product</button></td>
         </tr>
-        }
-        @foreach (Tuple<StoreService.Product, int> p in cartLines) { totalCost = totalCost + (p.Item1.Cost * p.Item2); }
-        <tr>
-            <td>Total:</td>
-            <td></td>
-            <td>@totalCost</td>
-            <td></td>
-        </tr>
-    </table>
+
+    }
+    @foreach (Tuple<StoreService.Product, int> p in CartLines) { totalCost = totalCost + (p.Item1.Cost * p.Item2); }
+    <tr>
+        <td>Total:</td>
+        <td></td>
+        <td></td>
+        <td>@totalCost.ToString("c")</td>
+        <td></td>
+    </tr>
+</table>
 }
-@code {
+
+@code
+{
     [Parameter]
-    public StoreService.Customer customer { get; set; }
+    public StoreService.Customer Customer { get; set; }
 
     [Parameter]
-    public List<Tuple<StoreService.Product, int>> cartLines {get;set;}
+    public List<Tuple<StoreService.Product, int>> CartLines { get; set; }
 
     [Parameter]
-    public EventCallback onChanged { get; set; }
+    public EventCallback OnChanged { get; set; }
 
     double totalCost = 0.0;
 
-    StoreService.Product newProduct = new StoreService.Product();
+    StoreService.Product _newProduct = new StoreService.Product();
 
-    //List<StoreService.Product> currentProducts = null;
     protected override async Task OnInitializedAsync() {
-        cartLines = await StoreService.GetCart(customer);
+        CartLines = await StoreService.GetCart(Customer);
     }
-
     async Task RemoveProduct(StoreService.Product p, Guid custID) {
         //storeService.RemoveProductFromCart(p,custID);
-        await onChanged.InvokeAsync(null);
-    }
-}
+        await OnChanged.InvokeAsync(null);
+     }
 
+}
