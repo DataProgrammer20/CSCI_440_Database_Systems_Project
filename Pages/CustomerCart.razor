@@ -20,7 +20,7 @@
             <td>@p.Item1.Name</td>
             <td>@p.Item2</td>
             <td>@p.Item1.Cost.ToString("c")</td>
-            <td><button @onclick=@(e=>RemoveProduct(p.Item1,Customer.Id))>Delete Product</button></td>
+            <td><button @onclick=@(e => RemoveProduct(p.Item1, Customer))>Delete Product</button></td>
         </tr>
 
     }
@@ -28,10 +28,10 @@
     <tr>
         <td>Total:</td>
         <td></td>
-        <td></td>
         <td>@totalCost.ToString("c")</td>
         <td></td>
     </tr>
+    @{totalCost = 0.0;}
 </table>
 }
 
@@ -48,13 +48,11 @@
 
     double totalCost = 0.0;
 
-    StoreService.Product _newProduct = new StoreService.Product();
-
     protected override async Task OnInitializedAsync() {
         CartLines = await StoreService.GetCart(Customer);
     }
-    async Task RemoveProduct(StoreService.Product p, Guid custID) {
-        //storeService.RemoveProductFromCart(p,custID);
+    async Task RemoveProduct(StoreService.Product p, StoreService.Customer customer) {
+        StoreService.RemoveProductFromCart(p,customer);
         await OnChanged.InvokeAsync(null);
      }
 

@@ -310,23 +310,6 @@ namespace Project_v2.Data
             cmd.ExecuteNonQuery();
         }
 
-        public async void DeleteProductFromCustomerCart(Product product,Customer customer)
-        {
-            var connection = new SqlConnection(ConnectionString);
-            await connection.OpenAsync();
-            var cmd = connection.CreateCommand();
-
-            cmd.CommandText = @"
-                DELETE 
-                FROM STORE.ORDERLINE ol, STORE.[ORDER] o 
-                WHERE = ol.orderId = o.orderId AND ol.productId = @productID AND o.customerId = @custId
-                ";
-
-            cmd.Parameters.AddWithValue("productID", product.Id);
-            cmd.Parameters.AddWithValue("custID", customer.Id);
-            cmd.ExecuteNonQuery();
-        }
-
         public async Task<List<Tuple<Product, int>>> GetCart(Customer c)
         {
             List<Tuple<Product, int>> results = new List<Tuple<Product, int>>();
@@ -407,19 +390,24 @@ namespace Project_v2.Data
             cmd.ExecuteNonQuery();
         }
 
-        public async void RemoveProductFromCart(Product p, Guid custID)
+        public async void RemoveProductFromCart(Product product, Customer customer)
         {
-            var conn = new SqlConnection(ConnectionString);
-            await conn.OpenAsync();
-            var cmd = conn.CreateCommand();
+            var connection = new SqlConnection(ConnectionString);
+            await connection.OpenAsync();
+            var cmd = connection.CreateCommand();
 
-            cmd.CommandText =
-                @"
-                --SELECT orderline given a productID and custID, then delete it.
+            cmd.CommandText = @"
+                DELETE
+                FROM STORE.ORDERLINE
+                WHERE id IN (
+	                SELECT ol.id
+	                FROM STORE.ORDERLINE ol, STORE.[ORDER] o 
+	                WHERE ol.orderId = o.orderId AND ol.productId = @productID AND o.customerId = @custId
+	                );
                 ";
-            cmd.Parameters.AddWithValue("productID", p.Id);
-            cmd.Parameters.AddWithValue("custID", custID);
 
+            cmd.Parameters.AddWithValue("productID", product.Id);
+            cmd.Parameters.AddWithValue("custID", customer.Id);
             cmd.ExecuteNonQuery();
         }
     }
