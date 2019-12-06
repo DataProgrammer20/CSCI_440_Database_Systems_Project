@@ -8,9 +8,4 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="1.1.0-preview1.19275.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="css" />
-    <Folder Include="images" />
-  </ItemGroup>
-
 </Project>
