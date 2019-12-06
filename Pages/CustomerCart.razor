@@ -29,7 +29,7 @@
         <td>Total:</td>
         <td></td>
         <td>@totalCost.ToString("c")</td>
-        <td></td>
+        <td><button @onclick=@(e => PurchaseCart(Customer))>Purchase</button></td>
     </tr>
     @{totalCost = 0.0;}
 </table>
@@ -51,6 +51,10 @@
     protected override async Task OnInitializedAsync() {
         CartLines = await StoreService.GetCart(Customer);
     }
+    async Task PurchaseCart(StoreService.Customer customer) {
+        StoreService.PurchaseCart(customer);
+        await OnChanged.InvokeAsync(null);
+     }
     async Task RemoveProduct(StoreService.Product p, StoreService.Customer customer) {
         StoreService.RemoveProductFromCart(p,customer);
         await OnChanged.InvokeAsync(null);

@@ -410,5 +410,24 @@ namespace Project_v2.Data
             cmd.Parameters.AddWithValue("custID", customer.Id);
             cmd.ExecuteNonQuery();
         }
+
+        public async void PurchaseCart(Customer customer) {
+            var connection = new SqlConnection(ConnectionString);
+            await connection.OpenAsync();
+            var cmd = connection.CreateCommand();
+
+            cmd.CommandText = @"
+            UPDATE STORE.[ORDER] 
+            SET orderStatus = 1
+            WHERE customerID = @custID AND orderStatus = 0;
+
+            INSERT INTO STORE.[ORDER] (orderID, customerID,orderStatus)
+	            SELECT NEWID(), c.id, 0
+	            FROM CustomersWithoutCarts c;
+            ";
+
+            cmd.Parameters.AddWithValue("custID", customer.Id);
+            cmd.ExecuteNonQuery();
+        }
     }
 }
