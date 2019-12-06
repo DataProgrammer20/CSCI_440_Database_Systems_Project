@@ -1,0 +1,41 @@
+﻿@using Project_v2.Data
+@inject StoreService  StoreService
+
+<h3>Inventory</h3>
+@if (products == null) {
+    <div>Loading...</div>
+} else {
+    <table width="100%">
+        <tr>
+            <th width="40%">Name</th>
+            <th width="20%">Cost</th>
+            <th width="20%">Inventory Count</th>
+            <th width="20%">Minimum Age to Buy</th>
+        </tr>
+        @foreach (var p in products) {
+            <tr>
+                <td>@p.Name</td>
+                <td>@p.Cost.ToString("c")</td>
+                <td>@p.InventoryCount</td>
+                <td>@p.MinAgeRestriction</td>
+                <td><button @onclick=@(e=>RemoveProduct(p,customer))>Delete Product</button></td>
+            </tr>
+        }
+    </table>
+}
+
+@code {
+    [Parameter]
+    public StoreService.Customer customer { get; set; }
+
+    [Parameter]
+    public List<StoreService.Product> products { get; set; }
+
+    [Parameter]
+    public EventCallback onChanged { get; set; }
+
+    async Task RemoveProduct(StoreService.Product p, StoreService.Customer c) {
+    StoreService.DeleteProductFromCustomerCart(p,c);
+    await onChanged.InvokeAsync(null);
+    }
+}
