@@ -7,10 +7,11 @@
 } else {
     <table width="100%">
         <tr>
-            <th width="40%">Name</th>
+            <th width="20%">Name</th>
             <th width="20%">Cost</th>
             <th width="20%">Inventory Count</th>
             <th width="20%">Minimum Age to Buy</th>
+            <th width="20%">Remove</th>
         </tr>
         @foreach (var p in products) {
             <tr>
@@ -28,14 +29,20 @@
     [Parameter]
     public StoreService.Customer customer { get; set; }
 
-    [Parameter]
-    public List<StoreService.Product> products { get; set; }
+    //[Parameter]
+    //public List<StoreService.Product> products { get; set; }
 
     [Parameter]
     public EventCallback onChanged { get; set; }
 
+    public List<StoreService.Product> products;
+
+    protected override async Task OnInitializedAsync() {
+        products = await StoreService.GetProducts();
+    }
+
     async Task RemoveProduct(StoreService.Product p, StoreService.Customer c) {
-    StoreService.DeleteProductFromCustomerCart(p,c);
-    await onChanged.InvokeAsync(null);
+        StoreService.DeleteProductFromCustomerCart(p,c);
+        await onChanged.InvokeAsync(null);
     }
 }

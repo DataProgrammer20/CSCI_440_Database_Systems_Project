@@ -168,14 +168,19 @@ namespace Project_v2.Data
 
         // Work in progress...
         // =======================================================================
-        public async Task<List<Product>> GetCustomerProducts(Guid customerId)
+        public async Task<List<Product>> GetProducts()
         {
             var result = new List<Product>();
             var connection = new SqlConnection(ConnectionString);
             await connection.OpenAsync();
             var cmd = connection.CreateCommand();
 
-            cmd.CommandText = @"";
+            cmd.CommandText = @"
+                SELECT *
+                FROM STORE.PRODUCTS p
+                WHERE p.inventory > 0
+                ORDER BY p.cost;
+                ";
             // Take it from here...
             // Need to get the products in the Customer's shopping cart...
 
@@ -298,11 +303,13 @@ namespace Project_v2.Data
             var cmd = connection.CreateCommand();
 
             cmd.CommandText = @"
-                DELETE FROM STORE.SHOPPINGCART
-                WHERE pendingOrder = @productID
+                DELETE 
+                FROM STORE.ORDERLINE ol, STORE.[ORDER] o 
+                WHERE = ol.orderId = o.orderId AND ol.productId = @productID AND o.customerId = @custId
                 ";
 
             cmd.Parameters.AddWithValue("productID", product.Id);
+            cmd.Parameters.AddWithValue("custID", customer.Id);
             cmd.ExecuteNonQuery();
         }
 
