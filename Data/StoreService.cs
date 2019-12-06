@@ -170,21 +170,35 @@ namespace Project_v2.Data
         // =======================================================================
         public async Task<List<Product>> GetProducts()
         {
-            var result = new List<Product>();
+            var results = new List<Product>();
             var connection = new SqlConnection(ConnectionString);
             await connection.OpenAsync();
             var cmd = connection.CreateCommand();
 
             cmd.CommandText = @"
-                SELECT *
-                FROM STORE.PRODUCTS p
+                SELECT id,name,cost,inventory,minAgeRestrictionInYears,distributerId
+                FROM STORE.PRODUCT p
                 WHERE p.inventory > 0
                 ORDER BY p.cost;
                 ";
-            // Take it from here...
-            // Need to get the products in the Customer's shopping cart...
 
-            return result;
+            var rdr = await cmd.ExecuteReaderAsync();
+
+            while (await rdr.ReadAsync())
+            {
+                results.Add(
+                    new Product
+                    {
+                        Id = rdr.GetGuid(0),
+                        Name = rdr.GetString(1),
+                        Cost = rdr.GetDouble(2),
+                        InventoryCount = rdr.GetInt32(3),
+                        MinAgeRestriction = rdr.GetInt32(4),
+                        DistributorId = rdr.GetGuid(5)
+                    }
+                 );
+            }
+            return results;
         }
         // =======================================================================
 

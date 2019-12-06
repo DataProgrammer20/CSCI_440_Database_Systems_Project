@@ -19,7 +19,7 @@
                 <td>@p.Cost.ToString("c")</td>
                 <td>@p.InventoryCount</td>
                 <td>@p.MinAgeRestriction</td>
-                <td><button @onclick=@(e=>RemoveProduct(p,customer))>Delete Product</button></td>
+                <td><button @onclick=@(e=>AddProduct(p,customer))>Add To Cart</button></td>
             </tr>
         }
     </table>
@@ -41,8 +41,8 @@
         products = await StoreService.GetProducts();
     }
 
-    async Task RemoveProduct(StoreService.Product p, StoreService.Customer c) {
-        StoreService.DeleteProductFromCustomerCart(p,c);
+    async Task AddProduct(StoreService.Product p, StoreService.Customer c) {
+        StoreService.AddToCart(c,p);
         await onChanged.InvokeAsync(null);
     }
 }
